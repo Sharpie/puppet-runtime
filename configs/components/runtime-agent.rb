@@ -25,6 +25,8 @@ component "runtime-agent" do |pkg, settings, platform|
     pkg.install_file File.join(libdir, "libgcc_s.a"), "/opt/puppetlabs/puppet/lib/libgcc_s.a"
   elsif platform.is_macos? || platform.name =~ /sles-15|fedora-(29|30)|el-8|debian-10/
     # Nothing to see here
+  elsif platform.is_cross_compiled_linux? && platform.name =~ /debian-(?:9|10)/
+    # Nothing to see here either
   elsif platform.is_windows?
     lib_type = platform.architecture == "x64" ? "seh" : "sjlj"
     pkg.install_file "#{settings[:gcc_bindir]}/libgcc_s_#{lib_type}-1.dll", "#{settings[:bindir]}/libgcc_s_#{lib_type}-1.dll"
