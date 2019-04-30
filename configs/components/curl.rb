@@ -15,7 +15,9 @@ component 'curl' do |pkg, settings, platform|
 
   pkg.build_requires "puppet-ca-bundle"
 
-  if platform.is_cross_compiled_linux?
+  # FIXME: Perhaps a platform-level setting like `use_pl_build_tools?` that
+  #        indicates whether the native toolchain should be preferred?
+  if platform.is_cross_compiled_linux? && ( ! platform.name =~ /debian-9/ )
     pkg.build_requires "runtime-#{settings[:runtime_project]}"
     pkg.environment "PATH" => "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
     pkg.environment "PKG_CONFIG_PATH" => "/opt/puppetlabs/puppet/lib/pkgconfig"
