@@ -106,6 +106,13 @@ platform_triple = "aarch64-redhat-linux" if platform.name == 'el-7-aarch64'
 if platform.is_windows?
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, "ruby.exe"))
   proj.setting(:host_gem, File.join(proj.ruby_bindir, "gem.bat"))
+elsif platform.is_cross_compiled_linux? && platform.name =~ /debian-(?:9|10)/
+  # For Debian 9+, we just run our cross-compiled ruby via QEMU which is a good
+  # check to see if it works.
+  #
+  # FIXME: Should add a platform.use_pl_build_tools? => false or similar to indicate this.
+  proj.setting(:host_ruby, File.join(proj.ruby_bindir, "ruby"))
+  proj.setting(:host_gem, File.join(proj.ruby_bindir, "gem"))
 elsif platform.is_cross_compiled_linux? || (platform.is_solaris? && platform.architecture == 'sparc')
   # Install a standalone ruby for cross-compiled platforms
   if platform.name =~ /solaris-10-sparc/
