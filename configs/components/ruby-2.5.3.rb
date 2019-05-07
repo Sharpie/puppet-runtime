@@ -44,7 +44,7 @@ component 'ruby-2.5.3' do |pkg, settings, platform|
   # See RE-12095 for more details.
   pkg.apply_patch "#{base}/cve-2019-8320_to_8325_r2.5.patch"
 
-  if platform.is_cross_compiled?
+  if platform.is_cross_compiled? && (! platform.name =~ /debian-(?:9|10)/)
     pkg.apply_patch "#{base}/uri_generic_remove_safe_nav_operator_r2.5.patch"
     if platform.name =~ /^solaris-10-sparc/
       pkg.apply_patch "#{base}/Solaris-only-Replace-reference-to-RUBY-var-with-opt-pl-build-tool.patch"
@@ -101,6 +101,8 @@ component 'ruby-2.5.3' do |pkg, settings, platform|
     'aix-7.1-ppc',
     'cisco-wrlinux-5-x86_64',
     'cisco-wrlinux-7-x86_64',
+    'debian-9-armhf',
+    'debian-10-armhf',
     'el-7-ppc64le',
     'el-7-aarch64',
     'eos-4-i386',

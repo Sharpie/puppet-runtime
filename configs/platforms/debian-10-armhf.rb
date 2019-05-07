@@ -27,6 +27,7 @@ platform "debian-10-armhf" do |plat|
     'make',
     'openjdk-11-jdk-headless',
     'pkg-config',
+    'qemu-user-static',
     'quilt',
     'rsync',
     "zlib1g-dev:#{plat.get_architecture}",
