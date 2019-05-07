@@ -34,6 +34,10 @@ elsif platform.is_solaris?
     # This doesn't work and halts the configure process. Set CONFIG_SHELL to force use of bash:
     pkg.environment 'CONFIG_SHELL', '/bin/bash'
   end
+elsif platform.is_cross_compiled_linux? && platform.name =~ /debian-(?:9|10)/
+  # No-op. We install crossbuild-essential-<arch> and let --host <platform triple> do the
+  # right thing.
+  # FIXME: Should be a flag like platform.use_pl_build_tools? to signal this.
 elsif platform.is_cross_compiled_linux? || platform.is_solaris?
   pkg.environment 'PATH', "#{settings[:bindir]}:$$PATH"
   pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
@@ -61,7 +65,7 @@ if platform.is_aix?
 elsif platform.is_solaris?
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
   pkg.build_requires "libedit" if platform.name =~ /^solaris-10-sparc/
-elsif platform.is_cross_compiled_linux?
+elsif platform.is_cross_compiled_linux? && (! platform.name =~ /debian-(?:9|10)/)
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
 end
 
