@@ -1,6 +1,6 @@
 project 'agent-runtime-master' do |proj|
   # Set preferred component versions if they differ from defaults:
-  proj.setting :ruby_version, '2.5.8'
+  proj.setting :ruby_version, '2.5.7'
   proj.setting :augeas_version, '1.12.0'
   proj.setting :openssl_version, platform.name =~ /windowsfips-2012r2/ ? '1.0.2' : '1.1.1'
 
@@ -28,19 +28,13 @@ project 'agent-runtime-master' do |proj|
   ########
 
   proj.component 'rubygem-concurrent-ruby'
-  proj.component 'rubygem-ffi'
   proj.component 'rubygem-multi_json'
   proj.component 'rubygem-optimist'
   proj.component 'rubygem-highline'
   proj.component 'rubygem-hiera-eyaml'
   proj.component 'rubygem-httpclient'
   proj.component 'rubygem-thor'
-
-  unless platform.is_windows?
-    proj.component 'rubygem-sys-filesystem'
-  end
-
   # SLES 15 uses the OS distro versions of boost and yaml-cpp:
-  proj.component 'boost' unless platform.name =~ /sles-15|debian-(?:9|10)-armhf/
-  proj.component 'yaml-cpp' unless platform.name =~ /sles-15|debian-(?:9|10)-armhf/
+  proj.component 'boost' unless platform.name =~ /sles-15/
+  proj.component 'yaml-cpp' unless platform.name =~ /sles-15/
 end
