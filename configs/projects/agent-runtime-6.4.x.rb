@@ -33,6 +33,6 @@ project 'agent-runtime-6.4.x' do |proj|
   proj.component 'rubygem-hiera-eyaml'
   proj.component 'rubygem-httpclient'
   # SLES 15 uses the OS distro versions of boost and yaml-cpp:
-  proj.component 'boost' unless platform.name =~ /sles-15/
-  proj.component 'yaml-cpp' unless platform.name =~ /sles-15/
+  proj.component 'boost' unless platform.name =~ /sles-15|debian-9-armhf/
+  proj.component 'yaml-cpp' unless platform.name =~ /sles-15|debian-9-armhf/
 end
