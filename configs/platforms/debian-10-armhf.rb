@@ -24,12 +24,14 @@ platform "debian-10-armhf" do |plat|
     "libc6-dev:#{plat.get_architecture}",
     "libbz2-dev:#{plat.get_architecture}",
     "libreadline-dev:#{plat.get_architecture}",
+    "libselinux1-dev:#{plat.get_architecture}",
     'make',
     'openjdk-11-jdk-headless',
     'pkg-config',
     'qemu-user-static',
     'quilt',
     'rsync',
+    'swig',
     "zlib1g-dev:#{plat.get_architecture}",
   ]
   plat.provision_with "export DEBIAN_FRONTEND=noninteractive; apt-get update -qq; apt-get install -qy --no-install-recommends #{packages.join(' ')}"
