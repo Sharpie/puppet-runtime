@@ -54,6 +54,12 @@ unless platform.name =~ /el-(5|6|7)|debian-(8|9)|ubuntu-(16|18)/
   cflags += "#{settings[:cppflags]} #{settings[:cflags]}"
 end
 
+# Debian 9 and 10 use cross-build-essential instead of pl-build-tools
+if platform.is_cross_compiled_linux? && ( platform.name =~ /debian-(?:9|10)/ )
+  cc = "/usr/bin/#{settings[:platform_triple]}-gcc"
+  system_include = "-I/usr/include"
+end
+
 pkg.build do
   [
     "export RUBYHDRDIR=$(shell #{ruby} -e 'puts RbConfig::CONFIG[\"rubyhdrdir\"]')",
