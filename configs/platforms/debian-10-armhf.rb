@@ -23,6 +23,7 @@ platform "debian-10-armhf" do |plat|
     'fakeroot',
     "libc6-dev:#{plat.get_architecture}",
     "libbz2-dev:#{plat.get_architecture}",
+    "libffi-dev:#{plat.get_architecture}",
     "libreadline-dev:#{plat.get_architecture}",
     "libselinux1-dev:#{plat.get_architecture}",
     'make',
