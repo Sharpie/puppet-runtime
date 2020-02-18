@@ -11,6 +11,8 @@ component "ruby-shadow" do |pkg, settings, platform|
       pkg.environment "RUBY", settings[:host_ruby]
     end
     ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
+  elsif platform.is_cross_compiled_linux? && ( platform.name =~ /debian-(?:9|10)/ )
+    ruby = File.join(settings[:ruby_bindir], 'ruby')
   elsif platform.is_cross_compiled_linux?
     pkg.environment "RUBY", settings[:host_ruby]
     ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"

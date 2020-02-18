@@ -192,6 +192,9 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
   rbconfig_changes = {}
   if platform.is_aix?
     rbconfig_changes["CC"] = "gcc"
+  elsif platform.is_cross_compiled? && ( platform.name =~ /debian-(?:9|10)/ )
+    # Native Debian cross-compilation toolchain. No need to twiddle paths
+    # afterward.
   elsif platform.is_cross_compiled? || platform.is_solaris?
     rbconfig_changes["CC"] = "gcc"
     rbconfig_changes["warnflags"] = "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wno-tautological-compare -Wno-parentheses-equality -Wno-constant-logical-operand -Wno-self-assign -Wunused-variable -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wno-maybe-uninitialized"
