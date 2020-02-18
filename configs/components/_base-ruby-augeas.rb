@@ -33,14 +33,14 @@ if platform.is_solaris?
     pkg.environment "RUBY", host_ruby
   end
   ruby = "#{host_ruby} -r#{settings[:datadir]}/doc/rbconfig-#{ruby_version}-orig.rb"
+elsif platform.is_cross_compiled_linux? && ( platform.name =~ /debian-(?:9|10)/ )
+  # Pick up SELinux configuration from ARM packages.
+  ruby = File.join(ruby_bindir, 'ruby')
+  pkg.environment "PKG_CONFIG_PATH", "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/#{settings[:platform_triple]}/pkgconfig"
 elsif platform.is_cross_compiled_linux?
   pkg.environment "RUBY", host_ruby
   ruby = "#{host_ruby} -r#{settings[:datadir]}/doc/rbconfig-#{ruby_version}-orig.rb"
   pkg.environment "LDFLAGS", settings[:ldflags]
-  if ( platform.name =~ /debian-(?:9|10)/ )
-    # Pick up SELinux configuration from ARM packages.
-    pkg.environment "PKG_CONFIG_PATH", "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/#{settings[:platform_triple]}/pkgconfig"
-  end
 else
   ruby = File.join(ruby_bindir, 'ruby')
 end

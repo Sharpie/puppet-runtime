@@ -43,7 +43,9 @@ component "rubygem-ffi" do |pkg, settings, platform|
     pkg.install_file "/usr/lib/libffi.so.5.0.10", "#{settings[:libdir]}/libffi.so"
   end
 
-  if platform.is_cross_compiled?
+  if platform.is_cross_compiled? && ( platform.name =~ /debian-(?:9|10)/ )
+    pkg.environment "PKG_CONFIG_PATH", "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/#{settings[:platform_triple]}/pkgconfig"
+  elsif platform.is_cross_compiled?
     ruby_api_version = settings[:ruby_version].gsub(/\.\d*$/, '.0')
     base_ruby = case platform.name
                 when /solaris-10/

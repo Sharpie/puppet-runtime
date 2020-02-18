@@ -58,6 +58,7 @@ end
 if platform.is_cross_compiled_linux? && ( platform.name =~ /debian-(?:9|10)/ )
   cc = "/usr/bin/#{settings[:platform_triple]}-gcc"
   system_include = "-I/usr/include"
+  ruby = "#{ruby_bindir}/ruby -rrbconfig"
 end
 
 pkg.build do
