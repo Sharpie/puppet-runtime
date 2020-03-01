@@ -92,6 +92,12 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
     # This normalizes the build string to something like AIX 7.1.0.0 rather
     # than AIX 7.1.0.2 or something
     special_flags += " --build=#{settings[:platform_triple]} "
+  elsif platform.is_cross_compiled? && (platform.name =~ /debian-(?:9|10)/)
+    # Explicitly pass target to prevent Ruby's config script from stripping
+    # the gnu suffix in the architecture triplet. This stripping breaks gems
+    # with compiled extensions if the user updates to RubyGems 3.1.0+ after
+    # the gem is installed.
+    special_flags += " --target=#{settings[:platform_triple]} "
   elsif platform.is_cross_compiled_linux?
     special_flags += " --with-baseruby=#{host_ruby} "
   elsif platform.is_solaris? && platform.architecture == "sparc"
@@ -178,8 +184,6 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
     'sparc-sun-solaris2.10' => 'sparc-solaris2.10',
     'i386-pc-solaris2.11' => 'i386-solaris2.11',
     'sparc-sun-solaris2.11' => 'sparc-solaris2.11',
-    'arm-linux-gnueabihf' => 'arm-linux-eabihf',
-    'arm-linux-gnueabi' => 'arm-linux-eabi',
     'x86_64-w64-mingw32' => 'x64-mingw32',
     'i686-w64-mingw32' => 'i386-mingw32'
   }
