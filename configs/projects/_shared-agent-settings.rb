@@ -26,6 +26,7 @@ proj.vendor 'Puppet, Inc.  <info@puppet.com>'
 proj.homepage 'https://puppet.com'
 proj.version_from_git
 
+proj.setting(:use_pl_build_tools, platform.settings.fetch(:use_pl_build_tools, true))
 proj.setting(:artifactory_url, "https://artifactory.delivery.puppetlabs.net/artifactory")
 proj.setting(:buildsources_url, "#{proj.artifactory_url}/generic/buildsources")
 
