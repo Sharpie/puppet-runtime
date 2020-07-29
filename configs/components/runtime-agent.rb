@@ -20,7 +20,9 @@ component "runtime-agent" do |pkg, settings, platform|
   # The runtime script uses readlink, which is in an odd place on Solaris systems:
   pkg.environment "PATH", "$(PATH):/opt/csw/gnu" if platform.is_solaris?
 
-  if platform.is_aix?
+  if (! settings[:use_pl_build_tools])
+    # Do nothing.
+  elsif platform.is_aix?
     pkg.install_file File.join(libdir, "libstdc++.a"), "/opt/puppetlabs/puppet/lib/libstdc++.a"
     pkg.install_file File.join(libdir, "libgcc_s.a"), "/opt/puppetlabs/puppet/lib/libgcc_s.a"
   elsif platform.is_windows?
