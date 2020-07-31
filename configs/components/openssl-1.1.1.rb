@@ -38,13 +38,13 @@ component 'openssl' do |pkg, settings, platform|
     end
 
     cflags = "#{settings[:cflags]} -fPIC"
-    if platform.architecture =~ /aarch/
+    if platform.platform_triple =~ /aarch/
       # OpenSSL fails to work on aarch unless we turn down the compiler optimization.
       # See PA-2135 for details
       cflags += " -O2"
     end
 
-    target = if platform.architecture == 'aarch64'
+    target = if platform.platform_triple =~ /aarch64/
                 'linux-aarch64'
               elsif platform.name =~ /debian-8-arm/
                 'linux-armv4'
