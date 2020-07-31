@@ -27,8 +27,15 @@ component 'openssl' do |pkg, settings, platform|
     cflags = settings[:cflags]
     ldflags = settings[:ldflags]
   elsif platform.is_cross_compiled_linux?
-    pkg.environment 'PATH', "/opt/pl-build-tools/bin:$$PATH"
-    pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
+    if settings[:use_pl_build_tools]
+      pkg.environment 'PATH', "/opt/pl-build-tools/bin:$$PATH" if settings[:use_pl_build_tools]
+      pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
+      ldflags = "-Wl,-rpath=/opt/pl-build-tools/#{settings[:platform_triple]}/lib -Wl,-rpath=#{settings[:libdir]} -L/opt/pl-build-tools/#{settings[:platform_triple]}/lib"
+    else
+      pkg.environment 'CC', settings[:cc]
+      cflags = settings[:cflags]
+      ldflags = "#{settings[:ldflags]} -Wl,-z,relro"
+    end
 
     cflags = "#{settings[:cflags]} -fPIC"
     if platform.architecture =~ /aarch/
@@ -37,7 +44,6 @@ component 'openssl' do |pkg, settings, platform|
       cflags += " -O2"
     end
 
-    ldflags = "-Wl,-rpath=/opt/pl-build-tools/#{settings[:platform_triple]}/lib -Wl,-rpath=#{settings[:libdir]} -L/opt/pl-build-tools/#{settings[:platform_triple]}/lib"
     target = if platform.architecture == 'aarch64'
                 'linux-aarch64'
               elsif platform.name =~ /debian-8-arm/
@@ -83,7 +89,7 @@ component 'openssl' do |pkg, settings, platform|
   # BUILD REQUIREMENTS
   ####################
 
-  pkg.build_requires "runtime-#{settings[:runtime_project]}"
+  pkg.build_requires "runtime-#{settings[:runtime_project]}" if settings[:use_pl_build_tools]
 
   ###########
   # CONFIGURE
