@@ -64,7 +64,7 @@ component "rubygem-ffi" do |pkg, settings, platform|
 
   pkg.environment 'PATH', '/opt/freeware/bin:/opt/pl-build-tools/bin:$(PATH)' if platform.is_aix?
 
-  if platform.is_cross_compiled?
+  if settings[:use_pl_build_tools] && platform.is_cross_compiled?
     base_ruby = case platform.name
                 when /solaris-10/
                   "/opt/csw/lib/ruby/2.0.0"
