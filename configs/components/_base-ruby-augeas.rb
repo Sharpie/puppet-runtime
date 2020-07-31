@@ -26,14 +26,14 @@ if platform.is_aix?
 end
 
 pkg.environment "CONFIGURE_ARGS", '--vendor'
-pkg.environment "PKG_CONFIG_PATH", "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/pkgconfig"
+pkg.environment "PKG_CONFIG_PATH", "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/pkgconfig:/usr/lib/#{platform.platform_triple}/pkgconfig"
 
 if platform.is_solaris?
   if platform.architecture == 'sparc'
     pkg.environment "RUBY", host_ruby
   end
   ruby = "#{host_ruby} -r#{settings[:datadir]}/doc/rbconfig-#{ruby_version}-orig.rb"
-elsif platform.is_cross_compiled_linux?
+elsif settings[:use_pl_build_tools] && platform.is_cross_compiled_linux?
   pkg.environment "RUBY", host_ruby
   ruby = "#{host_ruby} -r#{settings[:datadir]}/doc/rbconfig-#{ruby_version}-orig.rb"
   pkg.environment "LDFLAGS", settings[:ldflags]
