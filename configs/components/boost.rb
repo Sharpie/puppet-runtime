@@ -63,7 +63,11 @@ component "boost" do |pkg, settings, platform|
     # library build will go back to using the cross-compiled
     # g++.
     pkg.environment "CXX" => "/usr/bin/g++"
-    gpp = "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-g++"
+    gpp = if settings[:use_pl_build_tools]
+            "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-g++"
+          else
+            settings[:cxx]
+          end
   elsif platform.is_macos?
     pkg.environment "PATH" => "/opt/pl-build-tools/bin:$$PATH"
     linkflags = ""
