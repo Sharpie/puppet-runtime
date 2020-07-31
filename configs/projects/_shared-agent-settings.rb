@@ -114,9 +114,13 @@ elsif platform.is_cross_compiled_linux? || (platform.is_solaris? && platform.arc
   if platform.name =~ /solaris-10-sparc/
     proj.setting(:host_ruby, "/opt/csw/bin/ruby")
     proj.setting(:host_gem, "/opt/csw/bin/gem2.0")
-  else
+  elsif settings[:use_pl_build_tools]
     proj.setting(:host_ruby, "/opt/pl-build-tools/bin/ruby")
     proj.setting(:host_gem, "/opt/pl-build-tools/bin/gem")
+  else
+    # Cross-compiled, but running Ruby under emulation.
+    proj.setting(:host_ruby, File.join(proj.ruby_bindir, "ruby"))
+    proj.setting(:host_gem, File.join(proj.ruby_bindir, "gem"))
   end
 else
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, "ruby"))
