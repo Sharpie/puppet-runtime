@@ -21,7 +21,9 @@ ruby_bindir ||= settings[:ruby_bindir]
 # ENVIRONMENT
 #############
 
-if platform.is_aix?
+if (! settings[:use_pl_build_tools])
+  pkg.environment "CC", settings[:cc]
+elsif platform.is_aix?
   # We still use pl-gcc for AIX 7.1
   pkg.environment "CC", "/opt/pl-build-tools/bin/gcc"
   pkg.environment 'LDFLAGS', "#{settings[:ldflags]} -Wl,-bmaxdata:0x80000000"
@@ -61,7 +63,7 @@ if platform.is_aix?
 elsif platform.is_solaris?
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
   pkg.build_requires "libedit" if platform.name =~ /^solaris-10-sparc/
-elsif platform.is_cross_compiled_linux?
+elsif platform.is_cross_compiled_linux? && settings[:use_pl_build_tools]
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
 end
 
