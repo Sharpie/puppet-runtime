@@ -103,6 +103,8 @@ platform_triple = "powerpc64le-linux-gnu" if platform.architecture == "ppc64el"
 platform_triple = "arm-linux-gnueabihf" if platform.name == 'debian-8-armhf'
 platform_triple = "arm-linux-gnueabi" if platform.name == 'debian-8-armel'
 platform_triple = "aarch64-redhat-linux" if platform.name == 'el-7-aarch64'
+# Default to what was set in the platform definition.
+platform_triple ||= platform.platform_triple
 
 if platform.is_windows?
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, "ruby.exe"))
