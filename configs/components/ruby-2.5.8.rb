@@ -43,7 +43,7 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
   # Patch for https://bugs.ruby-lang.org/issues/14972
   pkg.apply_patch "#{base}/net_http_eof_14972_r2.5.patch"
 
-  if platform.is_cross_compiled?
+  if platform.is_cross_compiled? && settings[:use_pl_build_tools]
     pkg.apply_patch "#{base}/uri_generic_remove_safe_nav_operator_r2.5.patch"
     if platform.name =~ /^solaris-10-sparc/
       pkg.apply_patch "#{base}/Solaris-only-Replace-reference-to-RUBY-var-with-opt-pl-build-tool.patch"
@@ -93,7 +93,12 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
     # than AIX 7.1.0.2 or something
     special_flags += " --build=#{settings[:platform_triple]} "
   elsif platform.is_cross_compiled_linux?
-    special_flags += " --with-baseruby=#{host_ruby} "
+    # Explicitly pass target to prevent Ruby's config script from stripping
+    # the gnu suffix in the architecture triplet. This stripping breaks gems
+    # with compiled extensions if the user updates to RubyGems 3.1.0+ after
+    # the gem is installed.
+    special_flags += " --target=#{settings[:platform_triple]} "
+    special_flags += " --with-baseruby=#{host_ruby} " if settings[:use_pl_build_tools]
   elsif platform.is_solaris? && platform.architecture == "sparc"
     special_flags += " --with-baseruby=#{host_ruby} --enable-close-fds-by-recvmsg-with-peek "
   elsif platform.is_windows?
@@ -122,7 +127,7 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
     'windowsfips-2012r2-x64'
   ]
 
-  unless without_dtrace.include? platform.name
+  unless platform.is_cross_compiled? || without_dtrace.include?(platform.name)
     special_flags += ' --enable-dtrace '
   end
 
@@ -190,7 +195,7 @@ component 'ruby-2.5.8' do |pkg, settings, platform|
   rbconfig_changes = {}
   if platform.is_aix?
     rbconfig_changes["CC"] = "gcc"
-  elsif platform.is_cross_compiled? || platform.is_solaris?
+  elsif settings[:use_pl_build_tools] && (platform.is_cross_compiled? || platform.is_solaris?)
     rbconfig_changes["CC"] = "gcc"
     rbconfig_changes["warnflags"] = "-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wno-tautological-compare -Wno-parentheses-equality -Wno-constant-logical-operand -Wno-self-assign -Wunused-variable -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wno-maybe-uninitialized"
     if platform.name =~ /el-7-ppc64/
