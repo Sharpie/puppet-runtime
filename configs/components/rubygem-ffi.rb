@@ -57,7 +57,7 @@ component "rubygem-ffi" do |pkg, settings, platform|
   # FFI 1.13.1 forced the minimum required ruby version to ~> 2.3
   # In order to be able to install the gem using pl-ruby(2.1.9)
   # we need to remove the required ruby version check
-  if platform.is_cross_compiled?
+  if settings[:use_pl_build_tools] && platform.is_cross_compiled?
     base_ruby = case platform.name
                 when /solaris-10/
                   "/opt/csw/lib/ruby/2.0.0"

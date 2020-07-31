@@ -39,7 +39,7 @@ cc = "/opt/pl-build-tools/bin/gcc"
 system_include = "-I/usr/include"
 ruby = "#{ruby_bindir}/ruby -rrbconfig"
 
-if platform.is_cross_compiled_linux?
+if settings[:use_pl_build_tools] && platform.is_cross_compiled_linux?
   cc = "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
   system_include = "-I/opt/pl-build-tools/#{settings[:platform_triple]}/sysroot/usr/include"
   pkg.environment "RUBY", host_ruby
@@ -50,7 +50,7 @@ cflags = ""
 
 # The platforms below use pl-build-tools
 unless platform.name =~ /el-(5|6|7)|debian-(8|9)|ubuntu-(16|18)/
-  cc = '/usr/bin/gcc'
+  cc = settings[:cc] || '/usr/bin/gcc'
   cflags += "#{settings[:cppflags]} #{settings[:cflags]}"
 end
 
