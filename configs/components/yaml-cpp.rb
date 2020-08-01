@@ -8,7 +8,7 @@ component "yaml-cpp" do |pkg, settings, platform|
   make = 'make'
   mkdir = 'mkdir'
 
-  if platform.is_cross_compiled_linux?
+  if settings[:use_pl_build_tools] && platform.is_cross_compiled_linux?
     # We're using the x86_64 version of cmake
     cmake = "/opt/pl-build-tools/bin/cmake"
     cmake_toolchain_file = "-DPL_TOOLS_ROOT=/opt/freeware -DCMAKE_TOOLCHAIN_FILE=#{settings[:tools_root]}/#{settings[:platform_triple]}/pl-build-toolchain.cmake"
@@ -37,6 +37,7 @@ component "yaml-cpp" do |pkg, settings, platform|
     pkg.environment 'CPPFLAGS', settings[:cppflags]
     pkg.environment 'CFLAGS', settings[:cflags]
     pkg.environment 'LDFLAGS', settings[:ldflags]
+    cmake_toolchain_file = settings[:cmake_toolchain]
   end
 
   # Build Commands
