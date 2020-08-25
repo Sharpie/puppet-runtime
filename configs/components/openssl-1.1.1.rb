@@ -46,7 +46,7 @@ component 'openssl' do |pkg, settings, platform|
 
     target = if platform.architecture == 'aarch64'
                 'linux-aarch64'
-              elsif platform.name =~ /debian-8-arm/
+              elsif platform.name =~ /debian-\d+-arm/
                 'linux-armv4'
               elsif platform.architecture =~ /ppc64le|ppc64el/ # Little-endian
                 'linux-ppc64le'
