@@ -40,8 +40,9 @@ project 'agent-runtime-master' do |proj|
     proj.component 'rubygem-sys-filesystem'
   end
 
-  proj.component 'boost'
-  proj.component 'yaml-cpp'
+  # Skip cross-compiling C++ projects for Raspbian
+  proj.component 'boost' unless platform.name =~ /debian-\d+-armhf/
+  proj.component 'yaml-cpp' unless platform.name =~ /debian-\d+-armhf/
 
   if platform.is_windows?
     proj.component 'rubygem-win32-dir'
