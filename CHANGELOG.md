@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.05.07.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.05.07.1) (2026-05-07)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.04.20.1...2026.05.07.1)
+
+**Merged pull requests:**
+
+- Changes for 8.x branching [\#161](https://github.com/OpenVoxProject/puppet-runtime/pull/161) ([nmburgan](https://github.com/nmburgan))
+
 ## [2026.04.20.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.04.20.1) (2026-04-20)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.04.17.1...2026.04.20.1)
