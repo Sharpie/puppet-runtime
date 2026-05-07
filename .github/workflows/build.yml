@@ -12,7 +12,11 @@ on:
         required: true
       project_name:
         description: 'The vanagon project to build'
-        required: false
+        type: choice
+        options:
+          - agent-runtime-main
+          - agent-runtime-8.x
+          - openbolt-runtime
         default: 'agent-runtime-main'
       platform_list:
         description: 'A comma-separated list of platforms to build for. Do not include spaces. If not provided, will use the default list of platform supported by OpenVox.'
@@ -44,6 +48,7 @@ jobs:
       platform_list: ${{ inputs.platform_list }}
       vanagon_branch: ${{ inputs.vanagon_branch }}
       upload_to_s3: ${{ inputs.upload_to_s3 }}
+      branch: 'main'
     secrets: inherit
   build_dev:
     if: ${{ github.event.inputs.use_dev == 'true' }}
@@ -54,4 +59,5 @@ jobs:
       platform_list: ${{ inputs.platform_list }}
       vanagon_branch: ${{ inputs.vanagon_branch }}
       upload_to_s3: ${{ inputs.upload_to_s3 }}
+      branch: 'main'
     secrets: inherit
