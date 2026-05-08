@@ -32,7 +32,7 @@ jobs:
         run: |
           stat=0
           for projfile in configs/projects/[a-z]*.rb; do
-            for plat in el-8-x86_64 ubuntu-22.04-amd64 windows-all-x64; do
+            for plat in $(bundle exec vanagon list --platforms | tail -n +2); do
               proj=$(basename -s .rb "$projfile")
               if [[ "$proj" =~ ^pe- && "$plat" =~ ^(windows|osx) ]]; then
                 echo Skipping ${proj} on ${plat}, PE projects don\'t support Windows or macOS
