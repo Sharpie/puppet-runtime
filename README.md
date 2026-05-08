@@ -107,3 +107,98 @@ end
 ### End automated maintenance section ###
 ```
 The rake task will leave any lines it doesn't know about alone (in this case, the if/else/end logic) and update both checksums, with the default without the `# GEM TYPE` decorator being the `ruby` uncompiled gem. Try not to get too fancy with logic in here.
+
+## Updating (GitHub) releases
+
+We provide two rake tasks, `vox:print_outdated_components` and `vox:update_outdated_components`.
+The first one inspects all non-rubygem components:
+
+```
+$ bundle exec rake vox:print_outdated_components
+Checking 14 component(s) for updates...
+
+  augeas... up to date (1.14.1)
+  curl... error (Could not parse upstream version 'curl-8_20_0')
+  dmidecode... skipped (No GitHub URL detected)
+  libedit... skipped (No GitHub URL detected)
+  libffi... up to date (3.5.2)
+  libxml2... skipped (No GitHub URL detected)
+  libyaml... up to date (0.2.5)
+  openssl-3.0... OUTDATED: 3.0.20 -> 4.0.0
+  puppet-ca-bundle... up to date (1.1.0)
+  readline... skipped (No GitHub URL detected)
+  ruby-3.2... skipped (No GitHub URL detected)
+  ruby-augeas... up to date (0.6.0)
+  ruby-shadow... up to date (2.5.1)
+  virt-what... skipped (No GitHub URL detected)
+
+=== Components with available updates ===
+  openssl-3.0: 3.0.20 -> 4.0.0 (upstream tag: openssl-4.0.0)
+
+=== Errors encountered ===
+  curl: Could not parse upstream version 'curl-8_20_0'
+
+=== Skipped (no checkable upstream) ===
+  dmidecode: No GitHub URL detected
+  libedit: No GitHub URL detected
+  libxml2: No GitHub URL detected
+  readline: No GitHub URL detected
+  ruby-3.2: No GitHub URL detected
+  virt-what: No GitHub URL detected
+```
+
+It will search for new releases upstream.
+Right now only github.com is supported, but most of our components come from rubygems.org or github.com anyways, so this catches 85% of our components.
+The second rake task checks the GitHub API for new releases and updates the json file with the version & URL.
+
+```
+$ bundle exec rake vox:update_outdated_components
+Checking 14 component(s) for updates...
+
+  augeas... up to date (1.14.1)
+  curl... error (Could not parse upstream version 'curl-8_20_0')
+  dmidecode... skipped (No GitHub URL detected)
+  libedit... skipped (No GitHub URL detected)
+  libffi... up to date (3.5.2)
+  libxml2... skipped (No GitHub URL detected)
+  libyaml... up to date (0.2.5)
+  openssl-3.0... OUTDATED: 3.0.20 -> 4.0.0
+  puppet-ca-bundle... up to date (1.1.0)
+  readline... skipped (No GitHub URL detected)
+  ruby-3.2... skipped (No GitHub URL detected)
+  ruby-augeas... up to date (0.6.0)
+  ruby-shadow... up to date (2.5.1)
+  virt-what... skipped (No GitHub URL detected)
+
+=== Components with available updates ===
+  openssl-3.0: 3.0.20 -> 4.0.0 (upstream tag: openssl-4.0.0)
+
+=== Errors encountered ===
+  curl: Could not parse upstream version 'curl-8_20_0'
+
+=== Skipped (no checkable upstream) ===
+  dmidecode: No GitHub URL detected
+  libedit: No GitHub URL detected
+  libxml2: No GitHub URL detected
+  readline: No GitHub URL detected
+  ruby-3.2: No GitHub URL detected
+  virt-what: No GitHub URL detected
+
+Updated openssl-3.0 to 4.0.0
+One or more components could not be checked.
+$ git diff configs/components/openssl-3.0.json
+diff --git a/configs/components/openssl-3.0.json b/configs/components/openssl-3.0.json
+index 0f11c8a..10f1a32 100644
+--- a/configs/components/openssl-3.0.json
++++ b/configs/components/openssl-3.0.json
+@@ -1,5 +1,5 @@
+ {
+-  "version": "3.0.20",
+-  "url": "https://github.com/openssl/openssl/releases/download/openssl-3.0.20/openssl-3.0.20.tar.gz",
+-  "sha256sum": "c80a01dfc70ece4dc21168932c37739042d404d46ccc81a5986dd75314ecda6f"
++  "version": "4.0.0",
++  "url": "https://github.com/openssl/openssl/releases/download/openssl-4.0.0/openssl-4.0.0.tar.gz",
++  "sha256sum": "c32cf49a959c4f345f9606982dd36e7d28f7c58b19c2e25d75624d2b3d2f79ac"
+ }
+$
+```
