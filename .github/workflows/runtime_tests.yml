@@ -27,7 +27,8 @@ jobs:
         with:
           ruby-version: 4.0
           bundler-cache: true
-
+      - name: Run rubocop
+        run: bundle exec rubocop
       - name: Vanagon inspect
         run: |
           stat=0
@@ -51,9 +52,6 @@ jobs:
           if [ $stat -eq 1 ]; then
             false
           fi
-
-      - name: Run rubocop
-        run: bundle exec rubocop
 
   # this takes roughly 10 minutes for linux, so it's fine to run it on all PRs
   # MacOS / Windows takes ages, so we don't want to run this always
