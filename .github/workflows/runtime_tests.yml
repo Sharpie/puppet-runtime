@@ -22,17 +22,18 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Install Ruby version 3.3
+      - name: Install Ruby version 4.0
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
+          ruby-version: 4.0
           bundler-cache: true
-
+      - name: Run rubocop
+        run: bundle exec rubocop
       - name: Vanagon inspect
         run: |
           stat=0
           for projfile in configs/projects/[a-z]*.rb; do
-            for plat in el-8-x86_64 ubuntu-22.04-amd64 windows-all-x64; do
+            for plat in $(bundle exec vanagon list --platforms | tail -n +2); do
               proj=$(basename -s .rb "$projfile")
               if [[ "$proj" =~ ^pe- && "$plat" =~ ^(windows|osx) ]]; then
                 echo Skipping ${proj} on ${plat}, PE projects don\'t support Windows or macOS
@@ -51,9 +52,6 @@ jobs:
           if [ $stat -eq 1 ]; then
             false
           fi
-
-      - name: Run rubocop
-        run: bundle exec rubocop
 
   # this takes roughly 10 minutes for linux, so it's fine to run it on all PRs
   # MacOS / Windows takes ages, so we don't want to run this always
