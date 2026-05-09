@@ -43,6 +43,9 @@ component 'ruby-3.2' do |pkg, settings, platform|
     pkg.apply_patch "#{base}/openssl3_fips.patch"
   end
 
+  # Upgrade erb 4.0.2 -> 4.0.3.1, fixes CVE-2026-41316
+  pkg.apply_patch "#{base}/upgrade-erb-4.0.3.1.patch"
+
   ####################
   # ENVIRONMENT, FLAGS
   ####################

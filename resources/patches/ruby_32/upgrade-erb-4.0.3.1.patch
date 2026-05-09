@@ -1,0 +1,307 @@
+From 8f1b08c6ca9321b14da49843fe12da495150f3cd Mon Sep 17 00:00:00 2001
+From: Takashi Kokubun <takashikkbn@gmail.com>
+Date: Thu, 8 Dec 2022 22:36:35 -0800
+Subject: [PATCH 1/7] [ruby/erb] Use a ruby-lang alias on spec.email
+
+https://github.com/ruby/erb/commit/39414f32a5
+---
+ lib/erb.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/erb.gemspec b/lib/erb.gemspec
+index d973cc10de..94a8fd5c3e 100644
+--- a/lib/erb.gemspec
++++ b/lib/erb.gemspec
+@@ -9,7 +9,7 @@
+   spec.name          = 'erb'
+   spec.version       = ERB.const_get(:VERSION, false)
+   spec.authors       = ['Masatoshi SEKI', 'Takashi Kokubun']
+-  spec.email         = ['seki@ruby-lang.org', 'takashikkbn@gmail.com']
++  spec.email         = ['seki@ruby-lang.org', 'k0kubun@ruby-lang.org']
+ 
+   spec.summary       = %q{An easy to use but powerful templating system for Ruby.}
+   spec.description   = %q{An easy to use but powerful templating system for Ruby.}
+-- 
+2.54.0
+
+
+From 07150fe3dd22423a862edad4dac56687a7de941d Mon Sep 17 00:00:00 2001
+From: Nobuyoshi Nakada <nobu@ruby-lang.org>
+Date: Tue, 21 Mar 2023 19:00:18 +0900
+Subject: [PATCH 2/7] [ruby/erb] [DOC] Use indented heredoc
+
+https://github.com/ruby/erb/commit/8ba8bb7acf
+---
+ lib/erb.rb | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/erb.rb b/lib/erb.rb
+index 754419f819..bc1615d7da 100644
+--- a/lib/erb.rb
++++ b/lib/erb.rb
+@@ -307,11 +307,11 @@ def self.version
+   #    def build
+   #      b = binding
+   #      # create and run templates, filling member data variables
+-  #      ERB.new(<<-'END_PRODUCT'.gsub(/^\s+/, ""), trim_mode: "", eoutvar: "@product").result b
++  #      ERB.new(<<~'END_PRODUCT', trim_mode: "", eoutvar: "@product").result b
+   #        <%= PRODUCT[:name] %>
+   #        <%= PRODUCT[:desc] %>
+   #      END_PRODUCT
+-  #      ERB.new(<<-'END_PRICE'.gsub(/^\s+/, ""), trim_mode: "", eoutvar: "@price").result b
++  #      ERB.new(<<~'END_PRICE', trim_mode: "", eoutvar: "@price").result b
+   #        <%= PRODUCT[:name] %> -- <%= PRODUCT[:cost] %>
+   #        <%= PRODUCT[:desc] %>
+   #      END_PRICE
+-- 
+2.54.0
+
+
+From 296693d52e43e9efa09383b626d6c8203e8e1435 Mon Sep 17 00:00:00 2001
+From: Hiroshi SHIBATA <hsbt@ruby-lang.org>
+Date: Fri, 24 Mar 2023 13:39:03 +0900
+Subject: [PATCH 3/7] [ruby/erb] Update test libraries from
+ https://github.com/ruby/ruby/commit/b4e438d8aabaf4bba2b27f374c787543fae07c58
+ (https://github.com/ruby/erb/pull/48)
+
+https://github.com/ruby/erb/commit/3d3df5ce5c
+---
+ tool/lib/core_assertions.rb | 33 ++++++++++++---------------------
+ 1 file changed, 12 insertions(+), 21 deletions(-)
+
+diff --git a/tool/lib/core_assertions.rb b/tool/lib/core_assertions.rb
+index dea37b093e..c5a1d6ef3a 100644
+--- a/tool/lib/core_assertions.rb
++++ b/tool/lib/core_assertions.rb
+@@ -754,44 +754,35 @@ def assert_all_assertions_foreach(msg = nil, *keys, &block)
+           end
+         end
+       end
+-
+       # Expect +seq+ to respond to +first+ and +each+ methods, e.g.,
+       # Array, Range, Enumerator::ArithmeticSequence and other
+       # Enumerable-s, and each elements should be size factors.
+       #
+       # :yield: each elements of +seq+.
+       def assert_linear_performance(seq, rehearsal: nil, pre: ->(n) {n})
+-        pend "No PERFORMANCE_CLOCK found" unless defined?(PERFORMANCE_CLOCK)
+-
+-        # Timeout testing generally doesn't work when RJIT compilation happens.
+-        rjit_enabled = defined?(RubyVM::RJIT) && RubyVM::RJIT.enabled?
+-        measure = proc do |arg, message|
+-          st = Process.clock_gettime(PERFORMANCE_CLOCK)
+-          yield(*arg)
+-          t = (Process.clock_gettime(PERFORMANCE_CLOCK) - st)
+-          assert_operator 0, :<=, t, message unless rjit_enabled
+-          t
+-        end
+-
+         first = seq.first
+         *arg = pre.call(first)
+         times = (0..(rehearsal || (2 * first))).map do
+-          measure[arg, "rehearsal"].nonzero?
++          st = Process.clock_gettime(Process::CLOCK_MONOTONIC)
++          yield(*arg)
++          t = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - st)
++          assert_operator 0, :<=, t
++          t.nonzero?
+         end
+         times.compact!
+         tmin, tmax = times.minmax
+-
+-        # safe_factor * tmax * rehearsal_time_variance_factor(equals to 1 when variance is small)
+-        tbase = 10 * tmax * [(tmax / tmin) ** 2 / 4, 1].max
+-        info = "(tmin: #{tmin}, tmax: #{tmax}, tbase: #{tbase})"
++        tmax *= tmax / tmin
++        tmax = 10**Math.log10(tmax).ceil
+ 
+         seq.each do |i|
+           next if i == first
+-          t = tbase * i.fdiv(first)
++          t = tmax * i.fdiv(first)
+           *arg = pre.call(i)
+-          message = "[#{i}]: in #{t}s #{info}"
++          message = "[#{i}]: in #{t}s"
+           Timeout.timeout(t, Timeout::Error, message) do
+-            measure[arg, message]
++            st = Process.clock_gettime(Process::CLOCK_MONOTONIC)
++            yield(*arg)
++            assert_operator (Process.clock_gettime(Process::CLOCK_MONOTONIC) - st), :<=, t, message
+           end
+         end
+       end
+-- 
+2.54.0
+
+
+From 687b548b9d2ef4d0101576bad1639179708e42ac Mon Sep 17 00:00:00 2001
+From: Josh Nichols <josh@technicalpickles.com>
+Date: Mon, 21 Aug 2023 21:41:06 -0700
+Subject: [PATCH 4/7] [ruby/erb] Enable frozen_string_literal in all files
+ (https://github.com/ruby/erb/pull/49)
+
+I was surprised to see erb show up when I was using memory_profiler on
+my app. ERB::Compiler#compile has a blank string literal, and it
+ended up allocating some 41532 blank strings for a relatively small surface
+area.
+---
+ lib/erb/compiler.rb   | 1 +
+ lib/erb/def_method.rb | 1 +
+ lib/erb/util.rb       | 1 +
+ 3 files changed, 3 insertions(+)
+
+diff --git a/lib/erb/compiler.rb b/lib/erb/compiler.rb
+index 547d2c4c44..7096c8dcea 100644
+--- a/lib/erb/compiler.rb
++++ b/lib/erb/compiler.rb
+@@ -1,3 +1,4 @@
++# frozen_string_literal: true
+ #--
+ # ERB::Compiler
+ #
+diff --git a/lib/erb/def_method.rb b/lib/erb/def_method.rb
+index 17f9c0f9fa..aee989a926 100644
+--- a/lib/erb/def_method.rb
++++ b/lib/erb/def_method.rb
+@@ -1,3 +1,4 @@
++# frozen_string_literal: true
+ #--
+ # ERB::DefMethod
+ #
+diff --git a/lib/erb/util.rb b/lib/erb/util.rb
+index 0c1e7482a8..1d2a36275d 100644
+--- a/lib/erb/util.rb
++++ b/lib/erb/util.rb
+@@ -1,3 +1,4 @@
++# frozen_string_literal: true
+ #--
+ # ERB::Escape
+ #
+-- 
+2.54.0
+
+
+From ed308d0ca60e8bc5bf983f214c7ff025aed3a4db Mon Sep 17 00:00:00 2001
+From: Takashi Kokubun <takashikkbn@gmail.com>
+Date: Mon, 21 Aug 2023 21:42:57 -0700
+Subject: [PATCH 5/7] [ruby/erb] Version 4.0.3
+
+https://github.com/ruby/erb/commit/c594f2fb86
+---
+ lib/erb/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/erb/version.rb b/lib/erb/version.rb
+index 38e1b76ff4..295fc5fa6f 100644
+--- a/lib/erb/version.rb
++++ b/lib/erb/version.rb
+@@ -1,5 +1,5 @@
+ # frozen_string_literal: true
+ class ERB
+-  VERSION = '4.0.2'
++  VERSION = '4.0.3'
+   private_constant :VERSION
+ end
+-- 
+2.54.0
+
+
+From 076efa9313de7af237d1b5626a826fb7e30402e7 Mon Sep 17 00:00:00 2001
+From: Takashi Kokubun <takashikkbn@gmail.com>
+Date: Tue, 21 Apr 2026 16:27:44 +0900
+Subject: [PATCH 6/7] [ruby/erb] Prohibit def_method on marshal-loaded ERB
+ instances
+
+Extends the @_init guard to def_method so that an ERB object created
+via Marshal.load (which bypasses initialize) raises ArgumentError
+instead of evaluating arbitrary source. def_module and def_class both
+delegate to def_method and are covered by the same check.
+
+https://github.com/ruby/erb/commit/ef61b591b2
+
+Co-authored-by: Tristan Madani <TristanInSec@gmail.com>
+---
+ lib/erb.rb           |  3 +++
+ test/erb/test_erb.rb | 27 +++++++++++++++++++++++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/lib/erb.rb b/lib/erb.rb
+index bc1615d7da..a7317c0856 100644
+--- a/lib/erb.rb
++++ b/lib/erb.rb
+@@ -463,6 +463,9 @@ def new_toplevel(vars = nil)
+   #   erb.def_method(MyClass, 'render(arg1, arg2)', filename)
+   #   print MyClass.new.render('foo', 123)
+   def def_method(mod, methodname, fname='(ERB)')
++    unless @_init.equal?(self.class.singleton_class)
++      raise ArgumentError, "not initialized"
++    end
+     src = self.src.sub(/^(?!#|$)/) {"def #{methodname}\n"} << "\nend\n"
+     mod.module_eval do
+       eval(src, binding, fname, -1)
+diff --git a/test/erb/test_erb.rb b/test/erb/test_erb.rb
+index 555345a140..1266b64e41 100644
+--- a/test/erb/test_erb.rb
++++ b/test/erb/test_erb.rb
+@@ -714,6 +714,33 @@ def test_prohibited_marshal_load
+     assert_raise(ArgumentError) {erb.result}
+   end
+ 
++  def test_prohibited_marshal_load_def_method
++    erb = ERB.allocate
++    erb.instance_variable_set(:@src, "")
++    erb.instance_variable_set(:@lineno, 1)
++    erb.instance_variable_set(:@_init, true)
++    erb = Marshal.load(Marshal.dump(erb))
++    assert_raise(ArgumentError) {erb.def_method(Class.new, 'render')}
++  end
++
++  def test_prohibited_marshal_load_def_module
++    erb = ERB.allocate
++    erb.instance_variable_set(:@src, "")
++    erb.instance_variable_set(:@lineno, 1)
++    erb.instance_variable_set(:@_init, true)
++    erb = Marshal.load(Marshal.dump(erb))
++    assert_raise(ArgumentError) {erb.def_module}
++  end
++
++  def test_prohibited_marshal_load_def_class
++    erb = ERB.allocate
++    erb.instance_variable_set(:@src, "")
++    erb.instance_variable_set(:@lineno, 1)
++    erb.instance_variable_set(:@_init, true)
++    erb = Marshal.load(Marshal.dump(erb))
++    assert_raise(ArgumentError) {erb.def_class}
++  end
++
+   def test_multi_line_comment_lineno
+     erb = ERB.new(<<~EOS)
+       <%= __LINE__ %>
+-- 
+2.54.0
+
+
+From ca4b16b9966a85b083141edcfac4922d555ffe24 Mon Sep 17 00:00:00 2001
+From: Takashi Kokubun <takashikkbn@gmail.com>
+Date: Tue, 21 Apr 2026 16:43:48 +0900
+Subject: [PATCH 7/7] [ruby/erb] Version 4.0.3.1
+
+https://github.com/ruby/erb/commit/b6be29fd0e
+---
+ lib/erb/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/erb/version.rb b/lib/erb/version.rb
+index 295fc5fa6f..85e2a79def 100644
+--- a/lib/erb/version.rb
++++ b/lib/erb/version.rb
+@@ -1,5 +1,5 @@
+ # frozen_string_literal: true
+ class ERB
+-  VERSION = '4.0.3'
++  VERSION = '4.0.3.1'
+   private_constant :VERSION
+ end
+-- 
+2.54.0
+
