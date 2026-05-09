@@ -1,6 +1,7 @@
 /.vendor/
 vendor/*
 output/*
+.DS_Store
 .bundle
 gems
 Gemfile.lock
