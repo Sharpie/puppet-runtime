@@ -21,6 +21,8 @@ gem 'vanagon', *location_for(ENV['VANAGON_LOCATION'] || 'https://github.com/open
 # https://www.rubyonmac.dev/certificate-verify-failed-unable-to-get-certificate-crl-openssl-ssl-sslerror
 gem 'openssl' unless `uname -o`.chomp == 'Cygwin'
 
+gem 'octokit', '< 11'
+
 group(:development, optional: true) do
   gem 'hashdiff', require: false
   gem 'highline', require: false
