@@ -56,7 +56,9 @@ jobs:
     name: build puppet-runtime for Linux
     strategy:
       matrix:
-        project_name: ['agent-runtime-main', 'agent-runtime-8.x', 'openbolt-runtime']
+        # The matrix causes duplicate files, needs to be fixed in openvoxproject/shared-actions
+        #project_name: ['agent-runtime-main', 'agent-runtime-8.x', 'openbolt-runtime']
+        project_name: ['agent-runtime-main',]
     uses: 'openvoxproject/shared-actions/.github/workflows/build_vanagon.yml@main'
     with:
       project_name: ${{ matrix.project_name }}
