@@ -89,9 +89,6 @@ proj.setting(:rubygems_dir, File.join(proj.ruby_dir_base_version, 'rubygems'))
 proj.setting(:rubygems_ssl_dir, File.join(proj.rubygems_dir, 'ssl_certs'))
 
 # Cross-compiled Linux platforms
-platform_triple = 'ppc64le-redhat-linux' if platform.architecture == 'ppc64le'
-platform_triple = 'powerpc64le-suse-linux' if platform.architecture == 'ppc64le' && platform.name =~ /^sles-/
-platform_triple = 'powerpc64le-linux-gnu' if platform.architecture == 'ppc64el'
 platform_triple = 'arm-linux-gnueabihf' if platform.architecture == 'armhf'
 platform_triple = 'aarch64-apple-darwin' if platform.is_cross_compiled? && platform.is_macos?
 

@@ -85,7 +85,7 @@ project 'agent-runtime-main' do |proj|
   end
 
   # We only build ruby-selinux for EL, Fedora, Debian and Ubuntu (amd64/i386)
-  if platform.is_el? || platform.is_fedora? || platform.is_debian? || (platform.is_ubuntu? && platform.architecture !~ /ppc64el$/)
+  if platform.is_el? || platform.is_fedora? || platform.is_debian? || platform.is_ubuntu?
     proj.component 'ruby-selinux'
   end
 
@@ -99,7 +99,7 @@ project 'agent-runtime-main' do |proj|
 
   if platform.is_linux?
     proj.component 'virt-what'
-    proj.component 'dmidecode' unless platform.architecture =~ /ppc64/
+    proj.component 'dmidecode'
     # DBus exists outside of Linux, but it's the most common platform to find it on
     proj.component 'rubygem-ruby-dbus'
   end
