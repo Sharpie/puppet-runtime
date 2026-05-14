@@ -11,13 +11,6 @@ component 'libedit' do |pkg, settings, platform|
 
   pkg.environment 'PATH', '/opt/pl-build-tools/bin:$(PATH)'
 
-  if platform.is_solaris?
-    pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
-  elsif platform.is_aix?
-    pkg.environment 'CC', '/opt/pl-build-tools/bin/gcc'
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-  end
-
   pkg.environment 'CFLAGS', settings[:cflags] if platform.is_macos?
 
   pkg.configure do

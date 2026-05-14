@@ -80,7 +80,7 @@ project 'agent-runtime-8.x' do |proj|
     proj.component 'rubygem-CFPropertyList'
   end
 
-  unless platform.is_aix? || platform.is_windows?
+  unless platform.is_windows?
     proj.component 'ruby-shadow'
   end
 
@@ -89,16 +89,11 @@ project 'agent-runtime-8.x' do |proj|
     proj.component 'ruby-selinux'
   end
 
-  # libedit is used instead of readline on these platforms
-  if platform.is_solaris?
-    proj.component 'libedit'
-  end
-
   if platform.is_cross_compiled?
     proj.component 'pl-ruby-patch'
   end
 
-  if platform.is_windows? || platform.is_solaris? || platform.is_aix?
+  if platform.is_windows?
     proj.component 'rubygem-minitar'
   end
 

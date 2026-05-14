@@ -15,18 +15,7 @@ component 'ruby-shadow' do |pkg, settings, platform|
 
   pkg.environment 'CONFIGURE_ARGS', '--vendor'
 
-  if platform.is_solaris?
-    pkg.environment 'RUBY', settings[:host_ruby] if platform.is_cross_compiled?
-
-    ruby = if !platform.is_cross_compiled? && platform.architecture == 'sparc'
-             File.join(settings[:ruby_bindir], 'ruby')
-           else
-             # This should really only be done when cross compiling but
-             # to avoid breaking solaris x86_64 in 7.x continue preloading
-             # our hook.
-             "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
-           end
-  elsif platform.is_cross_compiled?
+  if platform.is_cross_compiled?
     pkg.environment 'RUBY', settings[:host_ruby]
     ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
   else

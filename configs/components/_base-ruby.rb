@@ -16,28 +16,7 @@ ruby_bindir ||= settings[:ruby_bindir]
 # ENVIRONMENT
 #############
 
-if platform.is_aix?
-  pkg.environment 'CC', '/opt/freeware/bin/gcc'
-  pkg.environment 'LDFLAGS', "#{settings[:ldflags]} -Wl,-bmaxdata:0x80000000"
-elsif platform.is_solaris?
-  if !platform.is_cross_compiled? && platform.architecture == 'sparc'
-    pkg.environment 'PATH',
-                    "#{settings[:bindir]}:/opt/pl-build-tools/bin:/opt/csw/bin:/usr/ccs/bin:/usr/sfw/bin:$(PATH)"
-    pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
-  else
-    pkg.environment 'PATH', "#{settings[:bindir]}:/opt/csw/bin:/usr/ccs/bin:/usr/sfw/bin:$(PATH)"
-    pkg.environment 'CC', '/opt/csw/bin/gcc'
-    pkg.environment 'LD', '/opt/csw/bin/gld'
-    pkg.environment 'AR', '/opt/csw/bin/gar'
-  end
-  pkg.environment 'CXX', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-g++"
-  pkg.environment 'LDFLAGS', "-Wl,-rpath=#{settings[:libdir]}"
-  if platform.os_version == '10'
-    # ./configure uses /bin/sh as the default shell when running config.sub on Solaris 10;
-    # This doesn't work and halts the configure process. Set CONFIG_SHELL to force use of bash:
-    pkg.environment 'CONFIG_SHELL', '/bin/bash'
-  end
-elsif platform.is_cross_compiled_linux?
+if platform.is_cross_compiled_linux?
   pkg.environment 'PATH', "#{settings[:bindir]}:$(PATH)"
   pkg.environment 'CC', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-gcc"
   pkg.environment 'CXX', "/opt/pl-build-tools/bin/#{settings[:platform_triple]}-g++"
@@ -66,15 +45,7 @@ end
 
 pkg.build_requires "openssl-#{settings[:openssl_version]}"
 
-if platform.is_aix?
-  pkg.build_requires "runtime-#{settings[:runtime_project]}"
-  pkg.build_requires 'readline'
-elsif platform.is_solaris?
-  pkg.build_requires "runtime-#{settings[:runtime_project]}"
-  pkg.build_requires 'libedit' if platform.name =~ /^solaris-10-sparc/
-elsif platform.is_cross_compiled_linux?
-  pkg.build_requires "runtime-#{settings[:runtime_project]}"
-end
+pkg.build_requires "runtime-#{settings[:runtime_project]}" if platform.is_cross_compiled_linux?
 
 #######
 # BUILD

@@ -103,14 +103,9 @@ platform_triple = 'aarch64-apple-darwin' if platform.is_cross_compiled? && platf
 if platform.is_windows?
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, 'ruby.exe'))
   proj.setting(:host_gem, File.join(proj.ruby_bindir, 'gem.bat'))
-elsif platform.is_cross_compiled? && (platform.is_linux? || platform.is_solaris?)
-  if platform.name =~ /solaris-10-sparc/
-    proj.setting(:host_ruby, '/opt/csw/bin/ruby')
-    proj.setting(:host_gem, '/opt/csw/bin/gem2.0')
-  else
-    proj.setting(:host_ruby, '/opt/pl-build-tools/bin/ruby')
-    proj.setting(:host_gem, '/opt/pl-build-tools/bin/gem')
-  end
+elsif platform.is_cross_compiled? && platform.is_linux?
+  proj.setting(:host_ruby, '/opt/pl-build-tools/bin/ruby')
+  proj.setting(:host_gem, '/opt/pl-build-tools/bin/gem')
 elsif platform.is_cross_compiled? && platform.is_macos?
   proj.setting(:host_ruby, "/usr/local/opt/ruby@#{ruby_version_y}/bin/ruby")
   proj.setting(:host_gem, "/usr/local/opt/ruby@#{ruby_version_y}/bin/gem")
@@ -123,13 +118,6 @@ if platform.is_cross_compiled_linux?
   host = "--host #{platform_triple}"
 elsif platform.is_cross_compiled? && platform.is_macos?
   host = '--host aarch64-apple-darwin --build x86_64-apple-darwin --target aarch64-apple-darwin'
-elsif platform.is_solaris?
-  if platform.architecture == 'i386'
-    platform_triple = "#{platform.architecture}-pc-solaris2.#{platform.os_version}"
-  else
-    platform_triple = "#{platform.architecture}-sun-solaris2.#{platform.os_version}"
-    host = "--host #{platform_triple}"
-  end
 elsif platform.is_windows?
   # For windows, we need to ensure we are building for mingw not cygwin
   platform_triple = platform.platform_triple
@@ -138,9 +126,6 @@ end
 
 proj.setting(:gem_install, "#{proj.host_gem} install --no-rdoc --no-ri --local ")
 proj.setting(:gem_uninstall, "#{proj.host_gem} uninstall --all --ignore-dependencies ")
-
-# For AIX, we use the triple to install a better rbconfig
-platform_triple = "powerpc-ibm-aix#{platform.os_version}.0.0" if platform.is_aix?
 
 proj.setting(:platform_triple, platform_triple)
 proj.setting(:host, host)
@@ -184,13 +169,7 @@ if platform.is_macos?
   proj.setting(:ldflags, "-L#{proj.libdir}")
 end
 
-proj.setting(:ldflags, "-Wl,-brtl -L#{proj.libdir}") if platform.is_aix?
-
-if platform.is_solaris?
-  proj.identifier 'voxpupuli.org'
-elsif platform.is_macos?
-  proj.identifier 'org.voxpupuli'
-end
+proj.identifier 'org.voxpupuli' if platform.is_macos?
 
 proj.timeout 7200 if platform.is_windows?
 
