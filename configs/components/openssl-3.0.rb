@@ -31,23 +31,16 @@ component 'openssl' do |pkg, settings, platform|
     target = platform.architecture == 'x64' ? 'mingw64' : 'mingw'
   elsif platform.is_macos?
     pkg.environment 'PATH', '$(PATH):/opt/homebrew/bin:/usr/local/bin'
-    pkg.environment 'CFLAGS', settings[:cflags]
     pkg.environment 'CC', settings[:cc]
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
 
-    target = if platform.architecture == 'arm64'
-               'darwin64-arm64'
-             else
-               'darwin64-x86_64'
-             end
+    target = "darwin64-#{platform.architecture}"
+
   elsif platform.is_linux?
     pkg.environment 'PATH', '/opt/pl-build-tools/bin:$(PATH):/usr/local/bin'
 
     ldflags = "#{settings[:ldflags]} -Wl,-z,relro"
     case platform.architecture
-    when /86$/
-      target = 'linux-elf'
-      sslflags = '386'
     when /aarch64$/
       target = 'linux-aarch64'
     when /ppc64le|ppc64el/ # Little-endian
