@@ -2,7 +2,6 @@
 # Component release information: https://github.com/hercules-team/augeas/releases
 #####
 component 'augeas' do |pkg, settings, platform|
-  # Figure out a solution if we ever need to update augeas on those platforms.
   pkg.load_from_json('configs/components/augeas.json')
 
   pkg.apply_patch 'resources/patches/augeas/augeas-1.14.1-return_reg_enosys.patch'
