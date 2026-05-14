@@ -87,17 +87,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
     pkg.environment 'MAKE', 'make'
   elsif platform.is_cross_compiled?
     pkg.environment 'CROSS_COMPILING', 'true'
-  elsif platform.is_aix?
-    # When using the default -ggdb3 I was seeing linker errors like, so use -g0 instead:
-    #
-    # ld: 0711-759 INTERNAL ERROR: Source file dwarf.c, line 528.
-    #   Depending on where this product was acquired, contact your service
-    #   representative or the approved supplier.
-    #   collect2: error: ld returned 16 exit status
-
-    pkg.environment 'optflags', '-O2 -fPIC -g0 '
-  elsif platform.is_solaris?
-    pkg.environment 'optflags', '-O1'
   else
     pkg.environment 'optflags', '-O2'
   end
@@ -130,23 +119,11 @@ component 'ruby-3.2' do |pkg, settings, platform|
                      ' --with-baseruby=no '
                    end
 
-  if platform.is_aix?
-    # This normalizes the build string to something like AIX 7.1.0.0 rather
-    # than AIX 7.1.0.2 or something
-    special_flags += " --build=#{settings[:platform_triple]} "
-  elsif platform.is_cross_compiled? && platform.is_macos?
+  if platform.is_cross_compiled? && platform.is_macos?
     # When the target arch is aarch64, ruby incorrectly selects the 'ucontext' coroutine
     # implementation instead of 'arm64', so specify 'amd64' explicitly
     # https://github.com/ruby/ruby/blob/c9c2245c0a25176072e02db9254f0e0c84c805cd/configure.ac#L2329-L2330
     special_flags += ' --with-coroutine=arm64 '
-  elsif platform.is_solaris? && platform.architecture == 'sparc'
-    unless platform.is_cross_compiled?
-      # configure seems to enable dtrace because the executable is present,
-      # explicitly disable it and don't enable it below
-      special_flags += ' --enable-dtrace=no '
-    end
-    special_flags += '--enable-close-fds-by-recvmsg-with-peek '
-
   elsif platform.is_windows?
     # ruby's configure script guesses the build host is `cygwin`, because we're using
     # cygwin opensshd & bash. So mkmf will convert compiler paths, e.g. -IC:/... to
@@ -170,8 +147,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
     'macos-all-x86_64',
     'redhatfips-7-x86_64',
     'sles-12-ppc64le',
-    'solaris-11-sparc',
-    'solaris-113-sparc',
     'windows-all-x64',
     'windowsfips-2016-x64'
   ]
@@ -182,13 +157,7 @@ component 'ruby-3.2' do |pkg, settings, platform|
   # CONFIGURE
   ###########
 
-  # TODO: Remove this once PA-1607 is resolved.
-  # TODO: Can we use native autoconf? The dependencies seemed a little too extensive
-  if platform.is_aix?
-    pkg.configure { ['/opt/freeware/bin/autoconf'] }
-  else
-    pkg.configure { ['bash autogen.sh'] }
-  end
+  pkg.configure { ['bash autogen.sh'] }
 
   pkg.configure do
     [
@@ -199,19 +168,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
         #{settings[:host]} \
         #{special_flags}"
     ]
-  end
-
-  if platform.name =~ /windowsfips-2016/
-    # We need the below patch since during ruby build step for windowsfips-2016-x64 agent-runtime builds,
-    # the rbconfig.rb file that gets generated contains '\r' trailing character in 'ruby_version' config.
-    # We patch rbconfig.rb to remove the '\r' character.
-    # This patch has to run after the build step since rbconfig.rb is generated during the build step.
-    # This is sort of a hacky way to do this. We need to find why the '\r' character gets appended to
-    # 'ruby_version' field in the future so that this patch can be removed - PA-6902.
-    pkg.add_source("#{base}/rbconfig_win.patch")
-    pkg.build do
-      ['TMP=/var/tmp /usr/bin/patch.exe --binary --strip=1 --fuzz=0 --ignore-whitespace --no-backup-if-mismatch < ../rbconfig_win.patch']
-    end
   end
 
   #########
@@ -235,16 +191,11 @@ component 'ruby-3.2' do |pkg, settings, platform|
   end
 
   target_doubles = {
-    'powerpc-ibm-aix7.2.0.0' => 'powerpc-aix7.2.0.0',
     'aarch64-redhat-linux' => 'aarch64-linux',
     'ppc64-redhat-linux' => 'powerpc64-linux',
     'ppc64le-redhat-linux' => 'powerpc64le-linux',
     'powerpc64le-suse-linux' => 'powerpc64le-linux',
     'powerpc64le-linux-gnu' => 'powerpc64le-linux',
-    'i386-pc-solaris2.10' => 'i386-solaris2.10',
-    'sparc-sun-solaris2.10' => 'sparc-solaris2.10',
-    'i386-pc-solaris2.11' => 'i386-solaris2.11',
-    'sparc-sun-solaris2.11' => 'sparc-solaris2.11',
     'arm-linux-gnueabihf' => 'arm-linux-eabihf',
     'arm-linux-gnueabi' => 'arm-linux-eabi',
     'x86_64-w64-mingw32' => 'x64-mingw32',
@@ -263,9 +214,7 @@ component 'ruby-3.2' do |pkg, settings, platform|
   # then the CC override allows us to build ffi_c.so for ARM as well. The
   # "host" ruby is configured in _shared-agent-settings
   rbconfig_changes = {}
-  if platform.is_aix?
-    rbconfig_changes['CC'] = 'gcc'
-  elsif platform.is_cross_compiled? || (platform.is_solaris? && platform.architecture != 'sparc')
+  if platform.is_cross_compiled? || (platform.is_solaris? && platform.architecture != 'sparc')
     # REMIND: why are we overriding rbconfig for solaris intel?
     rbconfig_changes['CC'] = 'gcc'
     rbconfig_changes['warnflags'] =

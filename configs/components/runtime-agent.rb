@@ -11,33 +11,7 @@ component 'runtime-agent' do |pkg, settings, platform|
     end
   end
 
-  if platform.is_cross_compiled?
-    libdir = if platform.architecture =~ /aarch64|ppc64$|ppc64le/
-               File.join('/opt/pl-build-tools', settings[:platform_triple], 'lib64')
-             else
-               File.join('/opt/pl-build-tools', settings[:platform_triple], 'lib')
-             end
-  elsif platform.is_aix?
-    libdir = '/opt/freeware/lib/gcc/powerpc-ibm-aix7.2.0.0/10/'
-  elsif platform.is_solaris? || platform.architecture =~ /i\d86/
-    libdir = '/opt/pl-build-tools/lib'
-  elsif platform.architecture =~ /64/
-    libdir = '/opt/pl-build-tools/lib64'
-  end
-
-  # The runtime script uses readlink, which is in an odd place on Solaris systems:
-  pkg.environment 'PATH', '$(PATH):/opt/csw/gnu' if platform.is_solaris?
-
-  if platform.is_aix?
-    pkg.install_file File.join(libdir, 'libstdc++.a'), '/opt/puppetlabs/puppet/lib/libstdc++.a'
-    pkg.install_file File.join(libdir, 'libgcc_s.a'), '/opt/puppetlabs/puppet/lib/libgcc_s.a'
-    pkg.install_file File.join(libdir, 'libatomic.a'), '/opt/puppetlabs/puppet/lib/libatomic.a'
-    pkg.install_file '/opt/freeware/lib/libiconv.a', '/opt/puppetlabs/puppet/lib/libiconv.a'
-    pkg.install_file '/opt/freeware/lib/libncurses.so.6.4.0', '/opt/puppetlabs/puppet/lib/libncurses.so.6.4.0'
-    pkg.link         'libncurses.so.6.4.0', '/opt/puppetlabs/puppet/lib/libncurses.so'
-    pkg.install_file '/opt/freeware/lib/libreadline.a', '/opt/puppetlabs/puppet/lib/libreadline.a'
-    pkg.install_file '/opt/freeware/lib/libz.a', '/opt/puppetlabs/puppet/lib/libz.a'
-  elsif platform.is_windows?
+  if platform.is_windows?
     lib_type = platform.architecture == 'x64' ? 'seh' : 'sjlj'
     pkg.install_file "#{settings[:gcc_bindir]}/libgcc_s_#{lib_type}-1.dll",
                      "#{settings[:bindir]}/libgcc_s_#{lib_type}-1.dll"
@@ -54,10 +28,5 @@ component 'runtime-agent' do |pkg, settings, platform|
     pkg.install_file "#{settings[:tools_root]}/bin/libgdbm_compat-4.dll",
                      "#{settings[:ruby_bindir]}/libgdbm_compat-4.dll"
     pkg.install_file "#{settings[:tools_root]}/bin/libffi-6.dll", "#{settings[:ruby_bindir]}/libffi-6.dll"
-  elsif platform.is_solaris? ||
-        platform.name =~ /redhatfips-7/
-    pkg.install do
-      "bash runtime.sh #{libdir} puppet"
-    end
   end
 end
