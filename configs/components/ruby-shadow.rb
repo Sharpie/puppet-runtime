@@ -7,20 +7,11 @@ component 'ruby-shadow' do |pkg, settings, platform|
   pkg.load_from_json('configs/components/ruby-shadow.json')
 
   pkg.build_requires "ruby-#{settings[:ruby_version]}"
-  if !platform.is_cross_compiled? && platform.architecture == 'sparc'
-    pkg.environment 'PATH', '$(PATH):/opt/pl-build-tools/bin:/usr/ccs/bin:/usr/sfw/bin'
-  else
-    pkg.environment 'PATH', '$(PATH):/usr/ccs/bin:/usr/sfw/bin'
-  end
+  pkg.environment 'PATH', '$(PATH):/usr/ccs/bin:/usr/sfw/bin'
 
   pkg.environment 'CONFIGURE_ARGS', '--vendor'
 
-  if platform.is_cross_compiled?
-    pkg.environment 'RUBY', settings[:host_ruby]
-    ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
-  else
-    ruby = File.join(settings[:ruby_bindir], 'ruby')
-  end
+  ruby = File.join(settings[:ruby_bindir], 'ruby')
 
   base = 'resources/patches/ruby_32'
   # https://github.com/apalmblad/ruby-shadow/issues/26

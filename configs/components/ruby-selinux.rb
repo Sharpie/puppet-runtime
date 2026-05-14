@@ -73,11 +73,6 @@ component 'ruby-selinux' do |pkg, settings, platform|
   # Instead, we use the headers provided in the tarball.
   system_include.prepend('-I./include ') if platform.name =~ /el-(9|10)/
 
-  if platform.is_cross_compiled_linux?
-    pkg.environment 'RUBY', settings[:host_ruby]
-    ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
-  end
-
   cflags = ''
 
   pkg.build do

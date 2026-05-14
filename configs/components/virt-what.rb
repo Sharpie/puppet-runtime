@@ -18,16 +18,8 @@ component 'virt-what' do |pkg, settings, platform|
 
   pkg.build_requires 'util-linux' if platform.is_rpm?
 
-  if platform.is_cross_compiled_linux?
-    host_opt = "--host #{settings[:platform_triple]}"
-
-    pkg.environment 'PATH' => "/opt/pl-build-tools/bin:$$PATH:#{settings[:bindir]}"
-    pkg.environment 'CFLAGS' => settings[:cflags]
-    pkg.environment 'LDFLAGS' => settings[:ldflags]
-  end
-
   pkg.configure do
-    ["./configure --prefix=#{settings[:prefix]} --sbindir=#{settings[:prefix]}/bin --libexecdir=#{settings[:prefix]}/lib/virt-what #{host_opt}"]
+    ["./configure --prefix=#{settings[:prefix]} --sbindir=#{settings[:prefix]}/bin --libexecdir=#{settings[:prefix]}/lib/virt-what"]
   end
 
   pkg.build do

@@ -78,7 +78,6 @@ proj.setting(:ruby_bindir, proj.bindir)
 raise "Couldn't find a :ruby_version setting in the project file" unless proj.ruby_version
 
 ruby_base_version = proj.ruby_version.gsub(/(\d+)\.(\d+)(\.\d+)?/, '\1.\2.0')
-ruby_version_y = proj.ruby_version.gsub(/(\d+)\.(\d+)(\.\d+)?/, '\1.\2')
 
 proj.setting(:gem_home, File.join(proj.libdir, 'ruby', 'gems', ruby_base_version))
 proj.setting(:ruby_vendordir, File.join(proj.libdir, 'ruby', 'vendor_ruby'))
@@ -90,7 +89,6 @@ proj.setting(:rubygems_ssl_dir, File.join(proj.rubygems_dir, 'ssl_certs'))
 
 # Cross-compiled Linux platforms
 platform_triple = 'arm-linux-gnueabihf' if platform.architecture == 'armhf'
-platform_triple = 'aarch64-apple-darwin' if platform.is_cross_compiled? && platform.is_macos?
 
 # Ruby's build process needs a functional "baseruby". When native compiling,
 # ruby will build "miniruby" and use that as "baseruby". When cross compiling,
@@ -100,22 +98,12 @@ platform_triple = 'aarch64-apple-darwin' if platform.is_cross_compiled? && platf
 if platform.is_windows?
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, 'ruby.exe'))
   proj.setting(:host_gem, File.join(proj.ruby_bindir, 'gem.bat'))
-elsif platform.is_cross_compiled? && platform.is_linux?
-  proj.setting(:host_ruby, '/opt/pl-build-tools/bin/ruby')
-  proj.setting(:host_gem, '/opt/pl-build-tools/bin/gem')
-elsif platform.is_cross_compiled? && platform.is_macos?
-  proj.setting(:host_ruby, "/usr/local/opt/ruby@#{ruby_version_y}/bin/ruby")
-  proj.setting(:host_gem, "/usr/local/opt/ruby@#{ruby_version_y}/bin/gem")
 else
   proj.setting(:host_ruby, File.join(proj.ruby_bindir, 'ruby'))
   proj.setting(:host_gem, File.join(proj.ruby_bindir, 'gem'))
 end
 
-if platform.is_cross_compiled_linux?
-  host = "--host #{platform_triple}"
-elsif platform.is_cross_compiled? && platform.is_macos?
-  host = '--host aarch64-apple-darwin --build x86_64-apple-darwin --target aarch64-apple-darwin'
-elsif platform.is_windows?
+if platform.is_windows?
   # For windows, we need to ensure we are building for mingw not cygwin
   platform_triple = platform.platform_triple
   host = "--host #{platform_triple}"

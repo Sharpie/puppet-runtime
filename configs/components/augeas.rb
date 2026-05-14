@@ -34,12 +34,6 @@ component 'augeas' do |pkg, settings, platform|
     end
   elsif platform.is_deb?
     pkg.requires 'libreadline6'
-
-    if platform.is_cross_compiled_linux?
-      pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
-      pkg.environment 'CFLAGS', settings[:cflags]
-      pkg.environment 'LDFLAGS', settings[:ldflags]
-    end
   elsif platform.is_macos?
     pkg.environment 'PATH', '$(PATH):/opt/homebrew/bin:/usr/local/bin'
     pkg.environment 'CFLAGS', settings[:cflags]

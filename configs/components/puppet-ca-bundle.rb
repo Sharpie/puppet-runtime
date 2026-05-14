@@ -3,12 +3,7 @@ component 'puppet-ca-bundle' do |pkg, settings, platform|
 
   pkg.build_requires "openssl-#{settings[:openssl_version]}"
 
-  openssl_cmd = if platform.is_cross_compiled_linux?
-                  # Use the build host's openssl command, not our cross-compiled or vendored one
-                  '/usr/bin/openssl'
-                else
-                  "#{settings[:bindir]}/openssl"
-                end
+  openssl_cmd = "#{settings[:bindir]}/openssl"
 
   target = if platform.is_fips?
              'install-fips'

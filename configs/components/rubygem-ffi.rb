@@ -5,7 +5,7 @@
 # Notes:
 #   Read the comments in the code below carefully.
 #####
-component 'rubygem-ffi' do |pkg, settings, platform|
+component 'rubygem-ffi' do |pkg, settings, _platform|
   ### Maintained by update_gems automation ###
   pkg.version '1.17.4'
   pkg.sha256sum 'bcd1642e06f0d16fc9e09ac6d49c3a7298b9789bcb58127302f934e437d60acf'
@@ -27,17 +27,4 @@ component 'rubygem-ffi' do |pkg, settings, platform|
   instance_eval File.read('configs/components/_base-rubygem.rb')
 
   pkg.environment 'PKG_CONFIG_PATH', '/opt/puppetlabs/puppet/lib/pkgconfig:$(PKG_CONFIG_PATH)'
-
-  if platform.is_cross_compiled? && !platform.is_macos?
-    # Change this someday if we ever end up cross compiling OpenVox on Linux
-    # as we won't be using pl-build-tools there
-    base_ruby = '/opt/pl-build-tools/lib/ruby/2.1.0'
-
-    # FFI 1.13.1 forced the minimum required ruby version to ~> 2.3
-    # In order to be able to install the gem using pl-ruby(2.1.9)
-    # we need to remove the required ruby version check
-    pkg.configure do
-      %(#{platform[:sed]} -i '0,/ensure_required_ruby_version_met/b; /ensure_required_ruby_version_met/d' #{base_ruby}/rubygems/installer.rb)
-    end
-  end
 end
