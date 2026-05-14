@@ -13,7 +13,7 @@ component 'openssl' do |pkg, settings, platform|
   # ENVIRONMENT, FLAGS, TARGETS
   #############################
 
-  if platform.name =~ /^(amazon-|el-|redhat-|redhatfips-|fedora-)/
+  if platform.is_rpm? && !platform.is_sles?
     pkg.build_requires 'perl-core'
   else
     pkg.build_requires 'perl'
