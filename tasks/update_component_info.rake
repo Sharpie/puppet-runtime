@@ -1,7 +1,7 @@
 require 'json'
 
 FIRST_TAG = '202501080'.freeze # First tag to include when regenerating
-IGNORED_PLATFORMS = %w[aix solaris redhatfips windowsfips el-6 osx sles-11 windows-2012r2 ppc64le armhf i386].freeze
+IGNORED_PLATFORMS = %w[aix solaris windowsfips el-6 osx sles-11 windows-2012r2 ppc64le i386].freeze
 INCLUDED_PROJECTS = %w[agent-runtime openbolt-runtime].freeze
 
 def platforms
