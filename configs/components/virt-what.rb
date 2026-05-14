@@ -18,14 +18,6 @@ component 'virt-what' do |pkg, settings, platform|
 
   pkg.build_requires 'util-linux' if platform.is_rpm?
 
-  if platform.is_linux?
-    if platform.architecture =~ /ppc64le$/
-      host_opt = '--host powerpc64le-unknown-linux-gnu'
-    elsif platform.architecture =~ /ppc64$/
-      host_opt = '--host powerpc64-unknown-linux-gnu'
-    end
-  end
-
   if platform.is_cross_compiled_linux?
     host_opt = "--host #{settings[:platform_triple]}"
 

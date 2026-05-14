@@ -26,7 +26,7 @@ component 'augeas' do |pkg, settings, platform|
   pkg.environment 'PKG_CONFIG_PATH', "#{settings[:libdir]}/pkgconfig"
 
   if platform.is_rpm?
-    if platform.architecture =~ /aarch64|ppc64|ppc64le/
+    if platform.architecture =~ /aarch64/
       pkg.build_requires "runtime-#{settings[:runtime_project]}"
       pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
       pkg.environment 'CFLAGS', settings[:cflags]

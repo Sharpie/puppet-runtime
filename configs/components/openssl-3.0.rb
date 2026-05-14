@@ -43,8 +43,6 @@ component 'openssl' do |pkg, settings, platform|
     case platform.architecture
     when /aarch64$/
       target = 'linux-aarch64'
-    when /ppc64le|ppc64el/ # Little-endian
-      target = 'linux-ppc64le'
     when /64$/
       target = 'linux-x86_64'
     when 'armhf'

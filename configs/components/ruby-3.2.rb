@@ -139,12 +139,9 @@ component 'ruby-3.2' do |pkg, settings, platform|
   end
 
   without_dtrace = [
-    'aix-7.2-ppc',
-    'el-7-ppc64le',
     'macos-all-arm64',
     'macos-all-x86_64',
     'redhatfips-7-x86_64',
-    'sles-12-ppc64le',
     'windows-all-x64',
     'windowsfips-2016-x64'
   ]
@@ -190,8 +187,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
 
   target_doubles = {
     'aarch64-redhat-linux' => 'aarch64-linux',
-    'ppc64-redhat-linux' => 'powerpc64-linux',
-    'ppc64le-redhat-linux' => 'powerpc64le-linux',
     'powerpc64le-suse-linux' => 'powerpc64le-linux',
     'powerpc64le-linux-gnu' => 'powerpc64le-linux',
     'arm-linux-gnueabihf' => 'arm-linux-eabihf',

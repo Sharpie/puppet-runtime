@@ -16,7 +16,7 @@ proj.setting(:cflags, "#{proj.cflags} -std=gnu17") if platform.is_macos?
 # are too old to support these flags.
 
 if (platform.is_sles? && platform.os_version.to_i >= 15) ||
-   (platform.is_el? && platform.os_version.to_i >= 8 && platform.architecture !~ /ppc64/) ||
+   (platform.is_el? && platform.os_version.to_i >= 8) ||
    (platform.is_debian? && platform.os_version.to_i >= 10) ||
    (platform.is_ubuntu? && platform.os_version.to_i >= 22) ||
    platform.is_fedora?
