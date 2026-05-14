@@ -11,25 +11,7 @@ component 'ruby-augeas' do |pkg, settings, platform|
   pkg.environment 'CONFIGURE_ARGS', '--vendor'
   pkg.environment 'PKG_CONFIG_PATH', "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/pkgconfig"
 
-  if platform.is_aix?
-    pkg.environment 'CC', '/opt/freeware/bin/gcc'
-    pkg.environment 'PATH', '$(PATH):/opt/freeware/bin'
-    pkg.environment 'RUBY', settings[:host_ruby]
-    pkg.environment 'LDFLAGS', " -brtl #{settings[:ldflags]}"
-  end
-
-  if platform.is_solaris?
-    pkg.environment 'RUBY', settings[:host_ruby] if platform.is_cross_compiled?
-
-    ruby = if !platform.is_cross_compiled? && platform.architecture == 'sparc'
-             File.join(settings[:ruby_bindir], 'ruby')
-           else
-             # This should really only be done when cross compiling but
-             # to avoid breaking solaris x86_64 in 7.x continue preloading
-             # our hook.
-             "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
-           end
-  elsif platform.is_cross_compiled? && (platform.is_linux? || platform.is_macos?)
+  if platform.is_cross_compiled? && (platform.is_linux? || platform.is_macos?)
     pkg.environment 'RUBY', settings[:host_ruby]
     ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
     pkg.environment 'LDFLAGS', settings[:ldflags]
@@ -83,7 +65,7 @@ component 'ruby-augeas' do |pkg, settings, platform|
     ]
   end
 
-  if platform.is_solaris? || platform.is_cross_compiled_linux?
+  if platform.is_cross_compiled_linux?
     pkg.install do
       "chown root:root #{augeas_rb_target}"
     end

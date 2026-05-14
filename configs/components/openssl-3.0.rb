@@ -15,8 +15,6 @@ component 'openssl' do |pkg, settings, platform|
 
   if platform.name =~ /^(amazon-|el-|redhat-|redhatfips-|fedora-)/
     pkg.build_requires 'perl-core'
-  elsif platform.is_solaris?
-    # perl is installed in platform definition
   else
     pkg.build_requires 'perl'
   end
@@ -31,27 +29,6 @@ component 'openssl' do |pkg, settings, platform|
     pkg.environment 'MAKE', platform[:make]
 
     target = platform.architecture == 'x64' ? 'mingw64' : 'mingw'
-  elsif platform.is_aix?
-    # REMIND: why not PATH?
-    pkg.environment 'CC', '/opt/freeware/bin/gcc'
-
-    cflags = "#{settings[:cflags]} -static-libgcc"
-    # see https://github.com/openssl/openssl/issues/18007 about -latomic
-    # see https://www.ibm.com/docs/en/aix/7.2?topic=l-ld-command about -R<path>, which is equivalent to -rpath
-    ldflags = "#{settings[:ldflags]} -Wl,-R#{settings[:libdir]} -latomic -lm"
-    target = 'aix-gcc'
-  elsif platform.is_solaris?
-    pkg.environment 'PATH', '/opt/csw/bin:$(PATH):/usr/local/bin:/usr/ccs/bin:/usr/sfw/bin'
-    if !platform.is_cross_compiled? && platform.architecture == 'sparc'
-      pkg.environment 'CC', '/opt/pl-build-tools/bin/gcc'
-      gcc_lib = "/opt/pl-build-tools/#{settings[:platform_triple]}/lib"
-    else
-      pkg.environment 'CC', '/opt/csw/bin/gcc'
-      gcc_lib = "/opt/csw/#{settings[:platform_triple]}/lib"
-    end
-    cflags = "#{settings[:cflags]} -fPIC"
-    ldflags = "-R#{gcc_lib} -Wl,-rpath=#{settings[:libdir]} -L#{gcc_lib}"
-    target = platform.architecture =~ /86/ ? 'solaris-x86-gcc' : 'solaris-sparcv9-gcc'
   elsif platform.is_macos?
     pkg.environment 'PATH', '$(PATH):/opt/homebrew/bin:/usr/local/bin'
     pkg.environment 'CFLAGS', settings[:cflags]
@@ -129,14 +106,12 @@ component 'openssl' do |pkg, settings, platform|
 
   # Individual projects may provide their own openssl configure flags:
   project_flags = settings[:openssl_extra_configure_flags] || []
-  perl_exec = ''
-  perl_exec = '/opt/freeware/bin/perl' if platform.is_aix?
   configure_flags << project_flags
 
   pkg.environment 'CFLAGS', cflags
   pkg.environment 'LDFLAGS', ldflags
   pkg.configure do
-    ["#{perl_exec} ./Configure #{configure_flags.join(' ')}"]
+    ["./Configure #{configure_flags.join(' ')}"]
   end
 
   #######
@@ -169,11 +144,6 @@ component 'openssl' do |pkg, settings, platform|
 
   install_prefix = platform.is_windows? ? '' : 'INSTALL_PREFIX=/'
   install_commands = []
-
-  if platform.is_aix?
-    # "Removes any currently unused modules in kernel and library memory."
-    install_commands << 'slibclean'
-  end
 
   # Skip man and html docs
   install_commands << "#{platform[:make]} #{install_prefix} install_sw install_ssldirs"

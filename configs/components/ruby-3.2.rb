@@ -26,8 +26,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
 
   pkg.apply_patch "#{base}/rbinstall_gem_path.patch" if platform.is_cross_compiled?
 
-  pkg.apply_patch "#{base}/reline_disable_terminfo.patch" if platform.is_aix?
-
   if platform.is_windows?
     pkg.apply_patch "#{base}/windows_mingw32_mkmf.patch"
     pkg.apply_patch "#{base}/ruby-faster-load_32.patch"
@@ -214,8 +212,7 @@ component 'ruby-3.2' do |pkg, settings, platform|
   # then the CC override allows us to build ffi_c.so for ARM as well. The
   # "host" ruby is configured in _shared-agent-settings
   rbconfig_changes = {}
-  if platform.is_cross_compiled? || (platform.is_solaris? && platform.architecture != 'sparc')
-    # REMIND: why are we overriding rbconfig for solaris intel?
+  if platform.is_cross_compiled?
     rbconfig_changes['CC'] = 'gcc'
     rbconfig_changes['warnflags'] =
       '-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wno-tautological-compare -Wno-parentheses-equality -Wno-constant-logical-operand -Wno-self-assign -Wunused-variable -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wno-maybe-uninitialized'

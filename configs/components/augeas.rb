@@ -13,24 +13,12 @@ component 'augeas' do |pkg, settings, platform|
     pkg.build_requires 'ruby-selinux'
   end
 
-  if platform.name =~ /solaris-10-sparc/
-    # This patch to gnulib fixes a linking error around symbol versioning in pthread.
-    pkg.add_source "file://resources/patches/augeas/augeas-#{version}-gnulib-pthread-in-use.patch"
-    pkg.configure do
-      # gnulib is a submodule, and its files don't exist until after configure,
-      # so we apply the patch manually here instead of using pkg.apply_patch.
-      ["/usr/bin/gpatch -p0 < ../augeas-#{version}-gnulib-pthread-in-use.patch"]
-    end
-  end
-
   if platform.is_macos?
     pkg.build_requires 'readline'
     pkg.build_requires 'autoconf'
     pkg.build_requires 'automake'
     pkg.build_requires 'libtool'
   end
-
-  extra_config_flags = platform.name =~ /solaris-11|aix/ ? ' --disable-dependency-tracking' : ''
 
   pkg.mirror "#{settings[:buildsources_url]}/augeas-#{pkg.get_version}.tar.gz"
 
@@ -39,17 +27,7 @@ component 'augeas' do |pkg, settings, platform|
   # Ensure we're building against our own libraries when present
   pkg.environment 'PKG_CONFIG_PATH', "#{settings[:libdir]}/pkgconfig"
 
-  if platform.is_aix?
-    pkg.environment 'CC', '/opt/freeware/bin/gcc'
-    pkg.environment 'PATH', "/opt/freeware/bin:$(PATH):#{settings[:bindir]}"
-    pkg.build_requires "runtime-#{settings[:runtime_project]}"
-    pkg.build_requires 'readline'
-
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', "-I#{settings[:includedir]}"
-  end
-
-  if platform.is_rpm? && !platform.is_aix?
+  if platform.is_rpm?
     if platform.architecture =~ /aarch64|ppc64|ppc64le/
       pkg.build_requires "runtime-#{settings[:runtime_project]}"
       pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
@@ -63,24 +41,6 @@ component 'augeas' do |pkg, settings, platform|
       pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
       pkg.environment 'CFLAGS', settings[:cflags]
       pkg.environment 'LDFLAGS', settings[:ldflags]
-    end
-
-  elsif platform.is_solaris?
-    pkg.environment 'PATH',
-                    "/opt/pl-build-tools/bin:$(PATH):/usr/local/bin:/usr/ccs/bin:/usr/sfw/bin:#{settings[:bindir]}"
-    pkg.environment 'CFLAGS', settings[:cflags]
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.build_requires 'libedit'
-    pkg.build_requires "runtime-#{settings[:runtime_project]}"
-    if platform.os_version == '10'
-      pkg.environment 'PKG_CONFIG_PATH', '/opt/csw/lib/pkgconfig'
-      pkg.environment 'PKG_CONFIG', '/opt/csw/bin/pkg-config'
-    elsif !platform.is_cross_compiled? && platform.architecture == 'sparc'
-      pkg.environment 'PKG_CONFIG_PATH', "#{settings[:libdir]}/pkgconfig"
-      pkg.environment 'PKG_CONFIG', '/usr/bin/pkg-config'
-    else
-      pkg.environment 'PKG_CONFIG_PATH', '/usr/lib/pkgconfig'
-      pkg.environment 'PKG_CONFIG', '/opt/pl-build-tools/bin/pkg-config'
     end
   elsif platform.is_macos?
     pkg.environment 'PATH', '$(PATH):/opt/homebrew/bin:/usr/local/bin'
@@ -108,7 +68,7 @@ component 'augeas' do |pkg, settings, platform|
   end
 
   pkg.configure do
-    ["./configure #{extra_config_flags} --prefix=#{settings[:prefix]} #{settings[:host]}"]
+    ["./configure --prefix=#{settings[:prefix]} #{settings[:host]}"]
   end
 
   pkg.build do

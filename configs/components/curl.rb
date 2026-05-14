@@ -19,11 +19,6 @@ component 'curl' do |pkg, settings, platform|
     pkg.environment 'PATH', "$(shell cygpath -u #{settings[:gcc_bindir]}):$(PATH)"
     pkg.environment 'NM', '/usr/bin/nm' if platform.name =~ /windowsfips-2016/
     pkg.environment 'CYGWIN', settings[:cygwin]
-  elsif platform.is_aix?
-    pkg.environment 'PKG_CONFIG_PATH', '/opt/puppetlabs/puppet/lib/pkgconfig'
-    pkg.environment 'PATH', "/opt/freeware/bin:$(PATH):#{settings[:bindir]}"
-    # exclude -Wl,-brtl
-    ldflags = "-L#{settings[:libdir]}"
   else
     pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
   end
@@ -34,11 +29,6 @@ component 'curl' do |pkg, settings, platform|
   # OpenSSL version 3.0 & up no longer ships by default the insecure algorithms
   # that curl's ntlm module depends on (md4 & des).
   configure_options << '--disable-ntlm' if !settings[:use_legacy_openssl_algos] && settings[:openssl_version] =~ /^3\./
-
-  if (platform.is_solaris? && platform.os_version == '11') || platform.is_aix?
-    # Makefile generation with automatic dependency tracking fails on these platforms
-    configure_options << '--disable-dependency-tracking'
-  end
 
   if platform.is_macos?
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
