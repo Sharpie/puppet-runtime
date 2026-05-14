@@ -5,8 +5,8 @@
 #####
 component 'rubygem-aws-sdk-ec2' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  pkg.version '1.615.0'
-  pkg.sha256sum '3a238f6f3c95df4587a4d34a6ca972c4376ec9354abf483b06632b7a30a0a8c0'
+  pkg.version '1.616.0'
+  pkg.sha256sum 'e72eec845ac685505055978b2870529ac292148b8bf4eed081714099e24bcfe5'
   pkg.build_requires 'rubygem-aws-sdk-core'
   pkg.build_requires 'rubygem-aws-sigv4'
   ### End automated maintenance section ###
