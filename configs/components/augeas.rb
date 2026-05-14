@@ -2,7 +2,6 @@
 # Component release information: https://github.com/hercules-team/augeas/releases
 #####
 component 'augeas' do |pkg, settings, platform|
-  # Solaris and AIX depend on libedit which breaks augeas compliation starting with 1.13.0.
   # Figure out a solution if we ever need to update augeas on those platforms.
   pkg.load_from_json('configs/components/augeas.json')
 
