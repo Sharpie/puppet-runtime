@@ -10,7 +10,7 @@ component 'rubygem-jwt' do |pkg, _settings, _platform|
   # PINNED
   pkg.version '2.10.2'
   pkg.sha256sum '31e1ee46f7359883d5e622446969fe9c118c3da87a0b1dca765ce269c3a0c4f4'
-  pkg.build_requires 'rubygem-base64'
+  pkg.build_requires 'rubygem-base64' if settings[:ruby_version] == '3.2'
   ### End automated maintenance section ###
 
   instance_eval File.read('configs/components/_base-rubygem.rb')

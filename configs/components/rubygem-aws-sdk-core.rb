@@ -10,7 +10,7 @@ component 'rubygem-aws-sdk-core' do |pkg, _settings, _platform|
   pkg.build_requires 'rubygem-aws-eventstream'
   pkg.build_requires 'rubygem-aws-partitions'
   pkg.build_requires 'rubygem-aws-sigv4'
-  pkg.build_requires 'rubygem-base64'
+  pkg.build_requires 'rubygem-base64' if settings[:ruby_version] == '3.2'
   pkg.build_requires 'rubygem-jmespath'
   ### End automated maintenance section ###
 
