@@ -5,20 +5,15 @@ component 'libffi' do |pkg, settings, platform|
   pkg.load_from_json('configs/components/libffi.json')
   pkg.mirror "#{settings[:buildsources_url]}/#{pkg.get_name}-#{pkg.get_version}.tar.gz"
 
+  pkg.environment 'LDFLAGS', settings[:ldflags]
+  pkg.environment 'CFLAGS', settings[:cflags]
+
   if platform.is_macos?
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', settings[:cflags]
     pkg.environment 'CC', settings[:cc]
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
   elsif platform.is_windows?
     pkg.environment 'PATH', "$(shell cygpath -u #{settings[:gcc_bindir]}):$(PATH)"
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', settings[:cflags]
-
     pkg.apply_patch 'resources/patches/libffi/revert_clang_32bit.patch' if platform.architecture == 'x86'
-  else
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', settings[:cflags]
   end
 
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
