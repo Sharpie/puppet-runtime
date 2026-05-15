@@ -11,7 +11,6 @@ version = pkg.get_version
 raise "You must set the `pkg.version` in your rubygem component before instance_eval'ing _base_rubygem.rb" unless version && !version.empty?
 
 pkg.build_requires "runtime-#{settings[:runtime_project]}"
-pkg.build_requires 'pl-ruby-patch' if platform.is_cross_compiled?
 
 if platform.is_windows?
   pkg.environment 'PATH',

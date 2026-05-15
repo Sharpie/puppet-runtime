@@ -10,18 +10,12 @@ component 'readline' do |pkg, settings, platform|
   pkg.load_from_json('configs/components/readline.json')
   pkg.mirror "#{settings[:buildsources_url]}/#{pkg.get_name}-#{pkg.get_version}.tar.gz"
 
-  if platform.is_cross_compiled_linux?
-    pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
-    pkg.environment 'CFLAGS', settings[:cflags]
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-  elsif platform.is_macos?
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', settings[:cflags]
+  pkg.environment 'LDFLAGS', settings[:ldflags]
+  pkg.environment 'CFLAGS', settings[:cflags]
+
+  if platform.is_macos?
     pkg.environment 'CC', settings[:cc]
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
-  else
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-    pkg.environment 'CFLAGS', settings[:cflags]
   end
 
   pkg.build_requires "runtime-#{settings[:runtime_project]}"

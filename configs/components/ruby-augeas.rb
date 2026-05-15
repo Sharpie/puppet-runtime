@@ -11,19 +11,14 @@ component 'ruby-augeas' do |pkg, settings, platform|
   pkg.environment 'CONFIGURE_ARGS', '--vendor'
   pkg.environment 'PKG_CONFIG_PATH', "#{File.join(settings[:libdir], 'pkgconfig')}:/usr/lib/pkgconfig"
 
-  if platform.is_cross_compiled? && (platform.is_linux? || platform.is_macos?)
-    pkg.environment 'RUBY', settings[:host_ruby]
-    ruby = "#{settings[:host_ruby]} -r#{settings[:datadir]}/doc/rbconfig-#{settings[:ruby_version]}-orig.rb"
-    pkg.environment 'LDFLAGS', settings[:ldflags]
-  elsif platform.is_macos?
+  ruby = File.join(settings[:ruby_bindir], 'ruby')
+
+  if platform.is_macos?
     pkg.environment 'PATH', '$(PATH):/opt/homebrew/bin' if platform.architecture == 'arm64'
     pkg.environment 'CC', settings[:cc]
     pkg.environment 'CFLAGS', settings[:cflags]
     pkg.environment 'LDFLAGS', settings[:ldflags]
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
-    ruby = File.join(settings[:ruby_bindir], 'ruby')
-  else
-    ruby = File.join(settings[:ruby_bindir], 'ruby')
   end
 
   pkg.build do
@@ -63,12 +58,6 @@ component 'ruby-augeas' do |pkg, settings, platform|
     [
       "#{platform[:make]} -e -j$(shell expr $(shell #{platform[:num_cores]}) + 1) DESTDIR=/ install"
     ]
-  end
-
-  if platform.is_cross_compiled_linux?
-    pkg.install do
-      "chown root:root #{augeas_rb_target}"
-    end
   end
 
   # Clean after install in case we are building for multiple rubies.

@@ -9,18 +9,13 @@ component 'curl' do |pkg, settings, platform|
   pkg.build_requires 'puppet-ca-bundle'
 
   ldflags = settings[:ldflags]
-  if platform.is_cross_compiled_linux?
-    pkg.build_requires "runtime-#{settings[:runtime_project]}"
-    pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
-    pkg.environment 'PKG_CONFIG_PATH', '/opt/puppetlabs/puppet/lib/pkgconfig'
-    pkg.environment 'PATH', '/opt/pl-build-tools/bin:$(PATH)'
-  elsif platform.is_windows?
+  if platform.is_windows?
     pkg.build_requires "runtime-#{settings[:runtime_project]}"
     pkg.environment 'PATH', "$(shell cygpath -u #{settings[:gcc_bindir]}):$(PATH)"
     pkg.environment 'NM', '/usr/bin/nm' if platform.name =~ /windowsfips-2016/
     pkg.environment 'CYGWIN', settings[:cygwin]
   else
-    pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
+    pkg.environment 'PATH', "$(PATH):#{settings[:bindir]}"
   end
 
   configure_options = []

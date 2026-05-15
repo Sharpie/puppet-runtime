@@ -24,8 +24,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
 
   base = 'resources/patches/ruby_32'
 
-  pkg.apply_patch "#{base}/rbinstall_gem_path.patch" if platform.is_cross_compiled?
-
   if platform.is_windows?
     pkg.apply_patch "#{base}/windows_mingw32_mkmf.patch"
     pkg.apply_patch "#{base}/ruby-faster-load_32.patch"
@@ -83,8 +81,6 @@ component 'ruby-3.2' do |pkg, settings, platform|
     pkg.environment 'optflags', optflags
     pkg.environment 'CFLAGS', optflags
     pkg.environment 'MAKE', 'make'
-  elsif platform.is_cross_compiled?
-    pkg.environment 'CROSS_COMPILING', 'true'
   else
     pkg.environment 'optflags', '-O2'
   end
@@ -103,26 +99,13 @@ component 'ruby-3.2' do |pkg, settings, platform|
   # Ruby's build process requires a "base" ruby and we need a ruby to install
   # gems into the /opt/puppetlabs/puppet/lib directory.
   #
-  # For cross-compiles, the base ruby must be executable on the host we're
-  # building on (usually Intel), not the arch we're building for (such as
-  # SPARC). This is usually pl-ruby.
-  #
   # For native compiles, we don't want ruby's build process to use whatever ruby
   # is in the PATH, as it's probably too old to build ruby 3.2. And we don't
   # want to use/maintain pl-ruby if we don't have to. Instead set baseruby to
   # "no" which will force ruby to build and use miniruby.
-  special_flags += if platform.is_cross_compiled?
-                     " --with-baseruby=#{host_ruby} "
-                   else
-                     ' --with-baseruby=no '
-                   end
+  special_flags += ' --with-baseruby=no '
 
-  if platform.is_cross_compiled? && platform.is_macos?
-    # When the target arch is aarch64, ruby incorrectly selects the 'ucontext' coroutine
-    # implementation instead of 'arm64', so specify 'amd64' explicitly
-    # https://github.com/ruby/ruby/blob/c9c2245c0a25176072e02db9254f0e0c84c805cd/configure.ac#L2329-L2330
-    special_flags += ' --with-coroutine=arm64 '
-  elsif platform.is_windows?
+  if platform.is_windows?
     # ruby's configure script guesses the build host is `cygwin`, because we're using
     # cygwin opensshd & bash. So mkmf will convert compiler paths, e.g. -IC:/... to
     # cygwin paths, -I/cygdrive/c/..., which confuses mingw-w64. So specify the build
@@ -207,22 +190,7 @@ component 'ruby-3.2' do |pkg, settings, platform|
   # then the CC override allows us to build ffi_c.so for ARM as well. The
   # "host" ruby is configured in _shared-agent-settings
   rbconfig_changes = {}
-  if platform.is_cross_compiled?
-    rbconfig_changes['CC'] = 'gcc'
-    rbconfig_changes['warnflags'] =
-      '-Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wno-tautological-compare -Wno-parentheses-equality -Wno-constant-logical-operand -Wno-self-assign -Wunused-variable -Wimplicit-int -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wsuggest-attribute=noreturn -Wsuggest-attribute=format -Wno-maybe-uninitialized'
-    if platform.name =~ /el-7-ppc64/
-      # EL 7 on POWER will fail with -Wl,--compress-debug-sections=zlib so this
-      # will remove that entry
-      # Matches both endians
-      rbconfig_changes['DLDFLAGS'] =
-        '-Wl,-rpath=/opt/puppetlabs/puppet/lib -L/opt/puppetlabs/puppet/lib  -Wl,-rpath,/opt/puppetlabs/puppet/lib'
-    elsif platform.name =~ /sles-12-ppc64le/
-      # the ancient gcc version on sles-12-ppc64le does not understand -fstack-protector-strong, so remove the `strong` part
-      rbconfig_changes['LDFLAGS'] =
-        '-L. -Wl,-rpath=/opt/puppetlabs/puppet/lib -fstack-protector -rdynamic -Wl,-export-dynamic -L/opt/puppetlabs/puppet/lib'
-    end
-  elsif platform.is_macos?
+  if platform.is_macos?
     rbconfig_changes['CC'] = "#{settings[:cc]} #{cflags}"
   elsif platform.is_windows?
     rbconfig_changes['CC'] = if platform.architecture == 'x64'

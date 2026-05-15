@@ -16,12 +16,6 @@ project 'agent-runtime-main' do |proj|
   # Directory for gems shared by puppet and puppetserver
   proj.setting(:puppet_gem_vendor_dir, File.join(proj.libdir, 'ruby', 'vendor_gems'))
 
-  # Ruby 2.7 loads openssl on installation. Because pl-ruby was not
-  # built with openssl support, we switch to compile with system
-  # rubies.
-  # Solaris 11 seems to work with pl-ruby, and 10 is handled in _shared-agent-settings.rb.
-  proj.setting(:host_ruby, '/usr/bin/ruby') if platform.is_cross_compiled_linux?
-
   # Ruby 2.6 (RubyGems 3.0.1) removed the --ri and --rdoc
   # options. Switch to using --no-document which is available starting
   # with RubyGems 2.0.0preview2. This should also cover cross-compiled
@@ -87,10 +81,6 @@ project 'agent-runtime-main' do |proj|
   # We only build ruby-selinux for EL, Fedora, Debian and Ubuntu (amd64/i386)
   if platform.is_el? || platform.is_fedora? || platform.is_debian? || platform.is_ubuntu?
     proj.component 'ruby-selinux'
-  end
-
-  if platform.is_cross_compiled?
-    proj.component 'pl-ruby-patch'
   end
 
   if platform.is_windows?

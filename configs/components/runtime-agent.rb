@@ -3,14 +3,6 @@ component 'runtime-agent' do |pkg, settings, platform|
   pkg.environment 'PROJECT_SHORTNAME', 'puppet'
   pkg.add_source 'file://resources/files/runtime/runtime.sh'
 
-  if platform.is_macos? && platform.is_cross_compiled? && (settings[:ruby_version] =~ /^3\./)
-    pkg.install do
-      # These are dependencies of ruby@3.x, remove symlinks from /usr/local
-      # so our build doesn't use the wrong headers
-      "cd /etc/homebrew && su test -c '#{platform.brew} unlink openssl libyaml'"
-    end
-  end
-
   if platform.is_windows?
     lib_type = platform.architecture == 'x64' ? 'seh' : 'sjlj'
     pkg.install_file "#{settings[:gcc_bindir]}/libgcc_s_#{lib_type}-1.dll",
