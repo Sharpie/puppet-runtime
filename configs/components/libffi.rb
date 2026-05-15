@@ -13,7 +13,6 @@ component 'libffi' do |pkg, settings, platform|
     pkg.environment 'MACOSX_DEPLOYMENT_TARGET', settings[:deployment_target]
   elsif platform.is_windows?
     pkg.environment 'PATH', "$(shell cygpath -u #{settings[:gcc_bindir]}):$(PATH)"
-    pkg.apply_patch 'resources/patches/libffi/revert_clang_32bit.patch' if platform.architecture == 'x86'
   end
 
   pkg.build_requires "runtime-#{settings[:runtime_project]}"
