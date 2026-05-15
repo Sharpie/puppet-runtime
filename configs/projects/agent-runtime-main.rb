@@ -1,7 +1,8 @@
 project 'agent-runtime-main' do |proj|
   # Set preferred component versions if they differ from defaults:
-  proj.setting :ruby_version, '3.2' # Leave the .Z out for Ruby 3.2
-  proj.setting :rubygem_highline_version, '3.0.1'
+  proj.setting :ruby_version, '4.0' # Leave the .Z out
+  proj.setting :rubygem_highline_version, '3.1.2'
+  proj.setting :openssl_version, '3.5'
 
   ########
   # Load shared agent settings
@@ -35,11 +36,9 @@ project 'agent-runtime-main' do |proj|
   proj.component 'libyaml'
   proj.component "openssl-#{proj.openssl_version}"
 
-  proj.component 'curl'
   proj.component 'puppet-ca-bundle'
   proj.component "ruby-#{proj.ruby_version}"
 
-  proj.component 'rubygem-base64'
   proj.component 'rubygem-concurrent-ruby'
   proj.component 'rubygem-deep_merge'
   proj.component 'rubygem-erubi'
@@ -50,7 +49,6 @@ project 'agent-runtime-main' do |proj|
   proj.component 'rubygem-highline'
   proj.component 'rubygem-hocon'
   proj.component 'rubygem-locale'
-  proj.component 'rubygem-multi_json' # TODO: obsolete for openvox 9 - https://github.com/OpenVoxProject/openvox/pull/293
   proj.component 'rubygem-net-ssh'
   proj.component 'rubygem-optimist'
   proj.component 'rubygem-semantic_puppet'
@@ -75,7 +73,7 @@ project 'agent-runtime-main' do |proj|
   end
 
   unless platform.is_windows?
-    proj.component 'ruby-shadow'
+    proj.component 'ruby-shadow-patched'
   end
 
   # We only build ruby-selinux for EL, Fedora, Debian and Ubuntu (amd64/i386)
