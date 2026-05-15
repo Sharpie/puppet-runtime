@@ -37,7 +37,7 @@ component 'openssl' do |pkg, settings, platform|
     target = "darwin64-#{platform.architecture}"
 
   elsif platform.is_linux?
-    pkg.environment 'PATH', '/opt/pl-build-tools/bin:$(PATH):/usr/local/bin'
+    pkg.environment 'PATH', '$(PATH):/usr/local/bin'
 
     ldflags = "#{settings[:ldflags]} -Wl,-z,relro"
     case platform.architecture

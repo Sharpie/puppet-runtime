@@ -15,7 +15,7 @@ component 'curl' do |pkg, settings, platform|
     pkg.environment 'NM', '/usr/bin/nm' if platform.name =~ /windowsfips-2016/
     pkg.environment 'CYGWIN', settings[:cygwin]
   else
-    pkg.environment 'PATH', "/opt/pl-build-tools/bin:$(PATH):#{settings[:bindir]}"
+    pkg.environment 'PATH', "$(PATH):#{settings[:bindir]}"
   end
 
   configure_options = []

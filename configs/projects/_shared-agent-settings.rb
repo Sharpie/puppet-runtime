@@ -133,8 +133,6 @@ if platform.is_windows?
   proj.setting(:ldflags, ldflags)
 
   proj.setting(:cygwin, 'nodosfilewarning winsymlinks:native')
-else
-  proj.setting(:tools_root, '/opt/pl-build-tools')
 end
 
 if platform.is_macos?
