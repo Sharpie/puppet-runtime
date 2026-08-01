@@ -125,7 +125,7 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-bcrypt_pbkdf'
   proj.component 'rubygem-ed25519'
 
-  # Puppet dependencies
+  # OpenVox dependencies
   proj.component 'rubygem-hocon'
   proj.component 'rubygem-deep_merge'
   proj.component 'rubygem-text'

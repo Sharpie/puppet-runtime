@@ -1,4 +1,4 @@
-# This "project" is designed to be shared by all puppet-agent projects
+# This "project" is designed to be shared by all openvox-agent projects
 # See configs/projects/agent-runtime-<branchname>.rb
 unless defined?(proj)
   warn('These are base settings shared by all puppet-agent projects; They cannot be built as a standalone project.')
@@ -14,7 +14,7 @@ proj.publish_yaml_settings
 proj.setting(:runtime_project, 'agent')
 
 ########
-# Common build settings for all versions of puppet-agent
+# Common build settings for all versions of openvox-agent
 ########
 
 proj.generate_archives true
@@ -162,7 +162,7 @@ proj.identifier 'org.voxpupuli' if platform.is_macos?
 
 proj.timeout 7200 if platform.is_windows?
 
-# Most branches of puppet-agent use these openssl flags in addition to the defaults in configs/components/openssl.rb -
+# Most branches of openvox-agent use these openssl flags in addition to the defaults in configs/components/openssl.rb -
 # Individual projects can override these if necessary.
 unless proj.settings[:openssl_extra_configure_flags]
   proj.setting(:openssl_extra_configure_flags, [
