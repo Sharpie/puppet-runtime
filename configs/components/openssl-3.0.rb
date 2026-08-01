@@ -78,9 +78,9 @@ component 'openssl' do |pkg, settings, platform|
     'no-dtls1-method',
     'no-dtls1_2-method',
     'no-aria',
-    # 'no-bf', pgcrypto is requires this cipher in postgres for puppetdb
-    # 'no-cast', pgcrypto is requires this cipher in postgres for puppetdb
-    # 'no-des', pgcrypto is requires this cipher in postgres for puppetdb,
+    # 'no-bf', pgcrypto is requires this cipher in postgres for OpenVoxDB
+    # 'no-cast', pgcrypto is requires this cipher in postgres for OpenVoxDB
+    # 'no-des', pgcrypto is requires this cipher in postgres for OpenVoxDB,
     # should pgcrypto cease needing it, it will also be needed by ntlm
     # and should only be enabled if "use_legacy_openssl_algos" is true.
     'no-rc5',

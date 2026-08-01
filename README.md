@@ -1,9 +1,9 @@
 # puppet-runtime
 
 The puppet-runtime exists to build vendored components for
-[Puppet](https://github.com/puppetlabs) projects and distribute them as a
+[OpenVox](https://github.com/OpenVoxProject) projects and distribute them as a
 tarball for reuse. Runtime projects are built with
-[vanagon](https://github.com/puppetlabs/vanagon), a packaging utility.
+[vanagon](https://github.com/OpenVoxProject/vanagon), a packaging utility.
 
 Available components include curl, openssl, ruby, and more - see the
 [configs/components directory](configs/components) for a full list. Individual
@@ -24,7 +24,7 @@ First, install the gem dependencies:
 $ bundle install
 ```
 
-Next, if you are building on infrastructure outside of Puppet, you will need to
+Next, if you are building on infrastructure outside of the OpenVox Project, you will need to
 modify some package dependency names in the [configs directory](configs). Any
 references to pl-gcc, pl-cmake, pl-yaml-cpp, etc. in these files will need to
 be changed to refer to equivalent installable packages on your target platform.
@@ -36,10 +36,10 @@ repository you need to build. This will depend on the target repository that
 consumes your finished runtime. In some cases, there is only one runtime
 project available (`runtime-pdk`, for example, is the only runtime for the
 PDK). In other cases, the runtime project to build may depend on the branch of
-the target repository that consumes the runtime. For example, puppet-agent is
+the target repository that consumes the runtime. For example, openvox-agent is
 developed on multiple git branches; You should select the runtime project that
 matches the target branch (for instance, you would build `agent-runtime-5.3.x`
-for use with puppet-agent's 5.3.x branch).  See the
+for use with openvox-agent's 5.3.x branch).  See the
 [configs/projects](configs/projects) directory for a full list of options.
 
 You can build the project using vanagon like this:
