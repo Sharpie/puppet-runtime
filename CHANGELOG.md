@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.08.02.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.02.1) (2026-08-02)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.07.16.1...2026.08.02.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| rubygem-aws-partitions | 1.1268.0 | 1.1277.0 |
+| rubygem-aws-sdk-ec2 | 1.632.0 | 1.633.0 |
+| rubygem-concurrent-ruby | 1.3.7 | 1.3.8 |
+| rubygem-excon | 1.5.0 | 1.6.0 |
+| rubygem-yard | 0.9.44 | 0.9.45 |
+
+
+**Merged pull requests:**
+
+- Rebrand Puppet -\> OpenVox in docs and comments [\#239](https://github.com/OpenVoxProject/puppet-runtime/pull/239) ([silug](https://github.com/silug))
+- Update Ruby components [\#236](https://github.com/OpenVoxProject/puppet-runtime/pull/236) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Pin bindata gem to 2.5.1 [\#231](https://github.com/OpenVoxProject/puppet-runtime/pull/231) ([Sharpie](https://github.com/Sharpie))
+- Update Ruby components [\#227](https://github.com/OpenVoxProject/puppet-runtime/pull/227) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [2026.07.16.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.07.16.1) (2026-07-16)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.07.06.1...2026.07.16.1)
