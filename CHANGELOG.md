@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.08.02.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.02.2) (2026-08-02)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.08.02.1...2026.08.02.2)
+
+**Fixed bugs:**
+
+- aws CLI: use OS CA bundle [\#241](https://github.com/OpenVoxProject/puppet-runtime/pull/241) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2026.08.02.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.02.1) (2026-08-02)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.07.16.1...2026.08.02.1)
