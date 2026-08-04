@@ -37,7 +37,7 @@ project 'agent-runtime-8.x' do |proj|
   proj.component "openssl-#{proj.openssl_version}"
 
   proj.component 'curl'
-  proj.component 'puppet-ca-bundle'
+  proj.component 'puppet-ca-bundle-8.x'
   proj.component "ruby-#{proj.ruby_version}"
 
   proj.component 'rubygem-base64'

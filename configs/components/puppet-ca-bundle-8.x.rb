@@ -1,5 +1,5 @@
-component 'puppet-ca-bundle' do |pkg, settings, platform|
-  pkg.load_from_json('configs/components/puppet-ca-bundle.json')
+component 'puppet-ca-bundle-8.x' do |pkg, settings, platform|
+  pkg.load_from_json('configs/components/puppet-ca-bundle-8.x.json')
 
   pkg.build_requires "openssl-#{settings[:openssl_version]}"
 

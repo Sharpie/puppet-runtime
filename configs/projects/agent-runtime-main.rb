@@ -36,7 +36,7 @@ project 'agent-runtime-main' do |proj|
   proj.component 'libyaml'
   proj.component "openssl-#{proj.openssl_version}"
 
-  proj.component 'puppet-ca-bundle'
+  proj.component 'puppet-ca-bundle-main'
   proj.component "ruby-#{proj.ruby_version}"
 
   proj.component 'rubygem-concurrent-ruby'
