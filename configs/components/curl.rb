@@ -6,7 +6,7 @@ component 'curl' do |pkg, settings, platform|
   pkg.mirror "#{settings[:buildsources_url]}/curl-#{pkg.get_version}.tar.gz"
 
   pkg.build_requires "openssl-#{settings[:openssl_version]}"
-  pkg.build_requires 'puppet-ca-bundle'
+  pkg.build_requires 'puppet-ca-bundle-8.x'
 
   ldflags = settings[:ldflags]
   if platform.is_windows?
