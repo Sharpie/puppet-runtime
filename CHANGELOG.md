@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.08.04.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.04.1) (2026-08-04)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.08.02.2...2026.08.04.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| puppet-ca-bundle-8.x |  | refs/tags/1.1.0 |
+| puppet-ca-bundle-main |  | refs/tags/1.2.0 |
+
+**Project component additions:**
+- puppet-ca-bundle-8.x: agent-runtime-8.x, openbolt-runtime
+- puppet-ca-bundle-main: agent-runtime-main
+
+
+**Implemented enhancements:**
+
+- puppet-ca-bundle-main: Update 1.1.0-\>1.2.0 [\#246](https://github.com/OpenVoxProject/puppet-runtime/pull/246) ([bastelfreak](https://github.com/bastelfreak))
+- split puppet-ca-bundle into two components [\#245](https://github.com/OpenVoxProject/puppet-runtime/pull/245) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- Revert "aws CLI: use OS CA bundle" [\#243](https://github.com/OpenVoxProject/puppet-runtime/pull/243) ([Sharpie](https://github.com/Sharpie))
+
 ## [2026.08.02.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.02.2) (2026-08-02)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.08.02.1...2026.08.02.2)
