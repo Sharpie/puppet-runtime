@@ -11,7 +11,7 @@ namespace :vox do
     abort 'You must provide a tag.' if args[:tag].nil? || args[:tag].empty?
 
     munged_tag = args[:tag].gsub('-', '.')
-    s3 = "aws s3 --endpoint-url=#{endpoint} --ca-bundle /etc/ssl/certs/ca-certificates.crt"
+    s3 = "aws s3 --endpoint-url=#{endpoint}"
 
     # Ensure the AWS CLI isn't going to fail with the given parameters
     run_command("#{s3} ls s3://#{bucket}/")
