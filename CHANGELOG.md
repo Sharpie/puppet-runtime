@@ -1,6 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.08.27.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.27.1) (2026-08-27)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.08.04.1...2026.08.27.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| openssl-3.0 | 3.0.21 | 3.0.22 |
+| openssl-3.5 | 3.5.7 | 3.5.8 |
+| rubygem-aws-partitions | 1.1277.0 | 1.1282.0 |
+| rubygem-aws-sdk-core | 3.254.0 | 3.254.1 |
+| rubygem-aws-sdk-ec2 | 1.633.0 | 1.639.0 |
+
+
+**Implemented enhancements:**
+
+- openssl: Update 3.0.21-\>3.0.22 & 3.5.7-\>3.5.8  [\#248](https://github.com/OpenVoxProject/puppet-runtime/pull/248) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- Remove setup.ps1 Cygwin setup script [\#247](https://github.com/OpenVoxProject/puppet-runtime/pull/247) ([Sharpie](https://github.com/Sharpie))
+- Update Ruby components [\#238](https://github.com/OpenVoxProject/puppet-runtime/pull/238) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [2026.08.04.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.08.04.1) (2026-08-04)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.08.02.2...2026.08.04.1)
