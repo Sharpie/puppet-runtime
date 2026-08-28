@@ -39,7 +39,7 @@ component 'ruby-augeas' do |pkg, settings, platform|
     # which sets PKG_CONFIG_PATH variables and calls
     #     /usr/bin/pkgconf
     # we will skip the RedHat call stack and call the pkgconf binary directly.
-    extconf += ' --with-pkg-config=/usr/bin/pkgconf' if platform.name =~ /((el|redhatfips)-(9|10))|fedora/
+    extconf += ' --with-pkg-config=/usr/bin/pkgconf' if platform.name =~ /((el|redhatfips)-(9|10))|fedora|amazon-2023/
     build_commands << extconf
     build_commands << "#{platform[:make]} -e -j$(shell expr $(shell #{platform[:num_cores]}) + 1)"
 
