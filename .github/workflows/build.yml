@@ -53,7 +53,7 @@ on:
 jobs:
   build:
     if: ${{ github.event.inputs.use_dev == 'false' }}
-    uses: 'openvoxproject/shared-actions/.github/workflows/build_vanagon.yml@main'
+    uses: 'Sharpie/shared-actions/.github/workflows/build_vanagon.yml@ignore-cr-for-cygwin'
     with:
       ref: ${{ inputs.ref }}
       project_name: ${{ inputs.project_name }}
@@ -64,7 +64,7 @@ jobs:
     secrets: inherit
   build_dev:
     if: ${{ github.event.inputs.use_dev == 'true' }}
-    uses: 'openvoxproject/shared-actions/.github/workflows/build_vanagon.yml@dev'
+    uses: 'Sharpie/shared-actions/.github/workflows/build_vanagon.yml@ignore-cr-for-cygwin'
     with:
       ref: ${{ inputs.ref }}
       project_name: ${{ inputs.project_name }}
