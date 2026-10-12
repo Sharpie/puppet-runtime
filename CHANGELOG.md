@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.12.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.12.2) (2026-10-12)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.12.1...2026.10.12.2)
+
+**Fixed bugs:**
+
+- fix checksums for openfact/openvox-strings [\#286](https://github.com/OpenVoxProject/puppet-runtime/pull/286) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2026.10.12.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.12.1) (2026-10-12)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.05.1...2026.10.12.1)
