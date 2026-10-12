@@ -71,6 +71,8 @@ DEFAULT_AND_BUNDLED_GEMS = [
   'open-uri',
   'optparse',
   'ostruct',
+  # Core class since Ruby 4.0, kept so a dependency on the gem creates no component.
+  'pathname',
   'power_assert',
   'pp',
   'prettyprint',
@@ -93,6 +95,8 @@ DEFAULT_AND_BUNDLED_GEMS = [
   'ruby2_keywords',
   'rubygems',
   'securerandom',
+  # Core class since Ruby 4.0, kept so a dependency on the gem creates no component.
+  'set',
   'shellwords',
   'singleton',
   'stringio',
