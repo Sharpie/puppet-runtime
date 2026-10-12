@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.12.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.12.1) (2026-10-12)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.05.1...2026.10.12.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| augeas | 1.14.1 | 1.15.0 |
+| rubygem-openfact | 5.7.1 | 5.7.2 |
+| rubygem-openvox | 8.29.0 | 8.30.0 |
+
+
+**Merged pull requests:**
+
+- Bump rubygem-openfact to 5.7.2, pin rubygem-openvox to 8.30.0 [\#285](https://github.com/OpenVoxProject/puppet-runtime/pull/285) ([Sharpie](https://github.com/Sharpie))
+- Use Debian mirror for dmidecode [\#282](https://github.com/OpenVoxProject/puppet-runtime/pull/282) ([nmburgan](https://github.com/nmburgan))
+- augeas: Update 1.14.1-\>1.15.0 [\#277](https://github.com/OpenVoxProject/puppet-runtime/pull/277) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2026.10.05.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.05.1) (2026-10-05)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.09.29.1...2026.10.05.1)
