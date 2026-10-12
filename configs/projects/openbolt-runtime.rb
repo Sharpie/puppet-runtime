@@ -156,7 +156,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-faraday'
   proj.component 'rubygem-faraday-net_http'
   proj.component 'rubygem-net-http'
-  proj.component 'rubygem-faraday-net_http_persistent'
   proj.component 'rubygem-faraday-follow_redirects'
 
   # Core dependencies
@@ -174,7 +173,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-rexml'
   proj.component 'rubygem-colored2'
   proj.component 'rubygem-concurrent-ruby'
-  proj.component 'rubygem-connection_pool'
   proj.component 'rubygem-cri'
   proj.component 'rubygem-erubi'
   proj.component 'rubygem-openfact'
@@ -192,12 +190,10 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-molinillo'
   # TODO: multi_json will probably be obsolete for openbolt 6 - see https://github.com/OpenVoxProject/openvox/pull/293
   proj.component 'rubygem-multi_json'
-  proj.component 'rubygem-net-http-persistent'
   proj.component 'rubygem-net-scp'
   proj.component 'rubygem-net-ssh'
   proj.component 'rubygem-net-ssh-krb'
   proj.component 'rubygem-nori'
-  proj.component 'rubygem-orchestrator_client'
   proj.component 'rubygem-paint'
   proj.component 'rubygem-public_suffix'
   proj.component 'rubygem-openvox'
