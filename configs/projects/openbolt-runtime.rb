@@ -154,24 +154,9 @@ project 'openbolt-runtime' do |proj|
 
   # faraday and its dependencies
   proj.component 'rubygem-faraday'
-  proj.component 'rubygem-faraday-em_http'
-  proj.component 'rubygem-em-http-request'
-  proj.component 'rubygem-http_parser.rb'
-  proj.component 'rubygem-eventmachine'
-  proj.component 'rubygem-em-socksify'
-  proj.component 'rubygem-cookiejar'
-  proj.component 'rubygem-faraday-em_synchrony'
-  proj.component 'rubygem-faraday-excon'
-  proj.component 'rubygem-excon'
-  proj.component 'rubygem-faraday-httpclient'
-  proj.component 'rubygem-faraday-multipart'
   proj.component 'rubygem-faraday-net_http'
   proj.component 'rubygem-net-http'
   proj.component 'rubygem-faraday-net_http_persistent'
-  proj.component 'rubygem-faraday-patron'
-  proj.component 'rubygem-patron'
-  proj.component 'rubygem-faraday-rack'
-  proj.component 'rubygem-faraday-retry'
   proj.component 'rubygem-faraday-follow_redirects'
 
   # Core dependencies
@@ -207,7 +192,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-molinillo'
   # TODO: multi_json will probably be obsolete for openbolt 6 - see https://github.com/OpenVoxProject/openvox/pull/293
   proj.component 'rubygem-multi_json'
-  proj.component 'rubygem-multipart-post'
   proj.component 'rubygem-net-http-persistent'
   proj.component 'rubygem-net-scp'
   proj.component 'rubygem-net-ssh'
