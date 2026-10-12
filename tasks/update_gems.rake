@@ -22,7 +22,7 @@ BUILD_REQ      = /^\s*pkg\.build_requires\s+['"]rubygem-([^'"]+)['"]\s*$/
 GEM_TYPE       = /^\s*#\s*GEM\s+TYPE:\s*(?<platform>[A-Za-z0-9\-_.]+)\s*$/
 PROJ_COMPONENT = /^\s*proj\.component\s+(?<quote>['"]?)(?<component>rubygem-[^'"\s]+)\k<quote>\s*$/
 
-TARGET_RUBY_VER = ENV['TARGET_RUBY']&.strip || '3.2'
+TARGET_RUBY_VER = ENV['TARGET_RUBY']&.strip || '4.0'
 # Update this list when targeting a new Ruby version. Comment out
 # gems that we specifically want to manage even if they are default or bundled.
 DEFAULT_AND_BUNDLED_GEMS = [
@@ -31,7 +31,6 @@ DEFAULT_AND_BUNDLED_GEMS = [
   'benchmark',
   'bigdecimal',
   'bundler',
-  'cgi',
   'csv',
   'date',
   'debug',
@@ -67,34 +66,33 @@ DEFAULT_AND_BUNDLED_GEMS = [
   'net-smtp',
   'nkf',
   'observer',
-  'open-uri',
   'open3',
   'openssl',
+  'open-uri',
   'optparse',
   'ostruct',
-  'pathname',
   'power_assert',
   'pp',
   'prettyprint',
   'prime',
+  'prism',
   'pstore',
   'psych',
   'racc',
   'rake',
   'rbs',
   'rdoc',
-  # 'rexml',
   'readline',
-  'readline-ext',
   'reline',
+  'repl_type_completor',
   'resolv',
   'resolv-replace',
+  # 'rexml',
   'rinda',
   'rss',
   'ruby2_keywords',
   'rubygems',
   'securerandom',
-  'set',
   'shellwords',
   'singleton',
   'stringio',
@@ -111,6 +109,7 @@ DEFAULT_AND_BUNDLED_GEMS = [
   'un',
   'uri',
   'weakref',
+  'win32-registry',
   'win32ole',
   'yaml',
   'zlib'
