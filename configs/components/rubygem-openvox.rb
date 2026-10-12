@@ -2,15 +2,11 @@
 # Component release information (lol):
 #   https://rubygems.org/gems/openvox
 #   https://github.com/OpenVoxProject/openvox/releases
-# Notes:
-#   To be replaced with openvox
 #####
 component 'rubygem-openvox' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  # PINNED
-  pkg.version '8.30.0'
-  pkg.sha256sum '9c4ea22864cc7b46660e4e545e48499511e38e47479111da1bf6d3b1bd94ec4f'
-  pkg.build_requires 'rubygem-base64' if settings[:ruby_version] == '3.2'
+  pkg.version '9.0.0'
+  pkg.sha256sum 'eeacfce6fcb3cd2bb866c0a7fc1a493288d009ae8f29dca3b20db3b14e90f654'
   pkg.build_requires 'rubygem-concurrent-ruby'
   pkg.build_requires 'rubygem-deep_merge'
   pkg.build_requires 'rubygem-fast_gettext'
