@@ -1,8 +1,8 @@
 project 'openbolt-runtime' do |proj|
   # Used in component configurations to conditionally include dependencies
   proj.setting(:runtime_project, 'openbolt')
-  proj.setting(:ruby_version, '3.2') # Leave the .Z out for Ruby 3.2
-  proj.setting(:openssl_version, '3.0')
+  proj.setting(:ruby_version, '4.0') # x.y for Ruby, no .z
+  proj.setting(:openssl_version, '3.5')
   # Legacy algos must be enabled in OpenSSL >= 3.0 for OpenBolt's WinRM transport to work.
   proj.setting(:use_legacy_openssl_algos, true)
 
