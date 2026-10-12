@@ -128,7 +128,7 @@ project 'openbolt-runtime' do |proj|
   # Ruby and deps
   proj.component "openssl-#{proj.openssl_version}"
   proj.component 'runtime-openbolt'
-  proj.component 'puppet-ca-bundle-8.x'
+  proj.component 'puppet-ca-bundle-main'
   proj.component "ruby-#{proj.ruby_version}"
 
   proj.component 'rubygem-bcrypt_pbkdf'
