@@ -155,7 +155,6 @@ project 'openbolt-runtime' do |proj|
   # faraday and its dependencies
   proj.component 'rubygem-faraday'
   proj.component 'rubygem-faraday-net_http'
-  proj.component 'rubygem-net-http'
   proj.component 'rubygem-faraday-follow_redirects'
 
   # Core dependencies
