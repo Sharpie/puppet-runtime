@@ -258,7 +258,7 @@ project 'openbolt-runtime' do |proj|
     proj.component 'libxml2'
     # Ruby Augeas and shadow
     proj.component 'ruby-augeas'
-    proj.component 'ruby-shadow'
+    proj.component 'ruby-shadow-patched'
   end
 
   # Linux specific components
