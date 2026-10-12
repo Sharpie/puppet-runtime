@@ -26,5 +26,5 @@ component 'rubygem-ffi' do |pkg, settings, _platform|
   settings["#{pkg.get_name}_gem_install_options".to_sym] = '-- --enable-system-libffi'
   instance_eval File.read('configs/components/_base-rubygem.rb')
 
-  pkg.environment 'PKG_CONFIG_PATH', '/opt/puppetlabs/puppet/lib/pkgconfig:$(PKG_CONFIG_PATH)'
+  pkg.environment 'PKG_CONFIG_PATH', "#{settings[:libdir]}/pkgconfig:$(PKG_CONFIG_PATH)"
 end
