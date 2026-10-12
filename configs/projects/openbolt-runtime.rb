@@ -179,7 +179,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-ffi'
   proj.component 'rubygem-gssapi'
   proj.component 'rubygem-gyoku'
-  proj.component 'rubygem-hiera'
   proj.component 'rubygem-httpclient'
   proj.component 'rubygem-jmespath'
   proj.component 'rubygem-jwt'
@@ -210,7 +209,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-thor'
   proj.component 'rubygem-unicode-display_width'
   proj.component 'rubygem-unicode-emoji'
-  proj.component 'rubygem-webrick'
   proj.component 'rubygem-yard'
   proj.component 'rubygem-openvox-strings'
 
