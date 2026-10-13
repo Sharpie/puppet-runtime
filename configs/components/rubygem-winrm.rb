@@ -5,10 +5,9 @@
 #####
 component 'rubygem-winrm' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  pkg.version '2.4.1'
-  pkg.sha256sum '9f8f7a60ec18f3834119efdb33f3bd9b979892622f137e2d489a592577af1572'
+  pkg.version '2.4.2'
+  pkg.sha256sum '1dd3377cb9e414097b23718af5640b0bff726889f6cce2542985417c1c78abca'
   pkg.build_requires 'rubygem-builder'
-  pkg.build_requires 'rubygem-erubi'
   pkg.build_requires 'rubygem-gssapi'
   pkg.build_requires 'rubygem-gyoku'
   pkg.build_requires 'rubygem-httpclient'
