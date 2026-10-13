@@ -2,14 +2,11 @@
 # Component release information:
 #   https://rubygems.org/gems/fast_gettext
 #   https://github.com/grosser/fast_gettext/blob/master/CHANGELOG
-# 2025-09-08: We must keep this at 2.4.0 for now because r10k
-#   relies on gettext-setup, which pins fast_gettext ~> 2.1.
 #####
 component 'rubygem-fast_gettext' do |pkg, settings, _platform|
   ### Maintained by update_gems automation ###
-  # PINNED
-  pkg.version '2.4.0'
-  pkg.sha256sum 'fd26c4c406aa10be34f0fd2847ce3ffdc1e9d9798de87538594757bbb9175fbf'
+  pkg.version '4.1.1'
+  pkg.sha256sum 'e8c532f6945b0dc31efb2e91366bd56630bc3ae6a05a4126937124e40366efd8'
   ### End automated maintenance section ###
 
   instance_eval File.read('configs/components/_base-rubygem.rb')

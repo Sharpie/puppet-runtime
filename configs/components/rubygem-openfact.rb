@@ -5,10 +5,8 @@
 #####
 component 'rubygem-openfact' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  # PINNED
-  pkg.version '5.7.2'
-  pkg.sha256sum 'e0e83990eebf9e791b7e99a7b96be3762ced6169bd900f8c2b698783be8e6399'
-  pkg.build_requires 'rubygem-base64' if settings[:ruby_version] == '3.2'
+  pkg.version '6.2.1'
+  pkg.sha256sum '77c682f525ce9c1a950745783205269ae565f1760b4de56abfbbe009d2e7bdd1'
   pkg.build_requires 'rubygem-hocon'
   pkg.build_requires 'rubygem-thor'
   ### End automated maintenance section ###

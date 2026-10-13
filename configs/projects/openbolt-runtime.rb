@@ -1,8 +1,8 @@
 project 'openbolt-runtime' do |proj|
   # Used in component configurations to conditionally include dependencies
   proj.setting(:runtime_project, 'openbolt')
-  proj.setting(:ruby_version, '3.2') # Leave the .Z out for Ruby 3.2
-  proj.setting(:openssl_version, '3.0')
+  proj.setting(:ruby_version, '4.0') # x.y for Ruby, no .z
+  proj.setting(:openssl_version, '3.5')
   # Legacy algos must be enabled in OpenSSL >= 3.0 for OpenBolt's WinRM transport to work.
   proj.setting(:use_legacy_openssl_algos, true)
 
@@ -74,14 +74,23 @@ project 'openbolt-runtime' do |proj|
 
   # Platform specific overrides or settings, which may override the defaults
   if platform.is_windows?
-    proj.setting(:gcc_root, '/usr/x86_64-w64-mingw32/sys-root/mingw')
-    proj.setting(:gcc_bindir, "#{proj.gcc_root}/bin")
-    proj.setting(:tools_root, '/usr/x86_64-w64-mingw32/sys-root/mingw')
+    if platform.name =~ /^windows-msys2/
+      # MSYS2 UCRT64 with a native compiler, libraries live under /ucrt64
+      proj.setting(:gcc_root, '/ucrt64')
+      proj.setting(:gcc_bindir, '/ucrt64/bin')
+      proj.setting(:tools_root, '/ucrt64')
+      proj.setting(:msys, 'winsymlinks:nativestrict')
+    else
+      # Cygwin with the mingw-w64 cross compiler
+      proj.setting(:gcc_root, '/usr/x86_64-w64-mingw32/sys-root/mingw')
+      proj.setting(:gcc_bindir, "#{proj.gcc_root}/bin")
+      proj.setting(:tools_root, '/usr/x86_64-w64-mingw32/sys-root/mingw')
+      proj.setting(:cygwin, 'nodosfilewarning winsymlinks:native')
+    end
     # If tools_root ever differs from gcc_root again, add it back here.
     proj.setting(:cppflags, "-I#{proj.gcc_root}/include -I#{proj.gcc_root}/include/readline -I#{proj.includedir}")
     proj.setting(:cflags, proj.cppflags)
     proj.setting(:ldflags, "-L#{proj.gcc_root}/lib -L#{proj.libdir} -Wl,--nxcompat -Wl,--dynamicbase")
-    proj.setting(:cygwin, 'nodosfilewarning winsymlinks:native')
   end
 
   if platform.is_macos?
@@ -119,7 +128,7 @@ project 'openbolt-runtime' do |proj|
   # Ruby and deps
   proj.component "openssl-#{proj.openssl_version}"
   proj.component 'runtime-openbolt'
-  proj.component 'puppet-ca-bundle-8.x'
+  proj.component 'puppet-ca-bundle-main'
   proj.component "ruby-#{proj.ruby_version}"
 
   proj.component 'rubygem-bcrypt_pbkdf'
@@ -145,24 +154,7 @@ project 'openbolt-runtime' do |proj|
 
   # faraday and its dependencies
   proj.component 'rubygem-faraday'
-  proj.component 'rubygem-faraday-em_http'
-  proj.component 'rubygem-em-http-request'
-  proj.component 'rubygem-http_parser.rb'
-  proj.component 'rubygem-eventmachine'
-  proj.component 'rubygem-em-socksify'
-  proj.component 'rubygem-cookiejar'
-  proj.component 'rubygem-faraday-em_synchrony'
-  proj.component 'rubygem-faraday-excon'
-  proj.component 'rubygem-excon'
-  proj.component 'rubygem-faraday-httpclient'
-  proj.component 'rubygem-faraday-multipart'
   proj.component 'rubygem-faraday-net_http'
-  proj.component 'rubygem-net-http'
-  proj.component 'rubygem-faraday-net_http_persistent'
-  proj.component 'rubygem-faraday-patron'
-  proj.component 'rubygem-patron'
-  proj.component 'rubygem-faraday-rack'
-  proj.component 'rubygem-faraday-retry'
   proj.component 'rubygem-faraday-follow_redirects'
 
   # Core dependencies
@@ -175,19 +167,15 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-bindata'
   proj.component 'rubygem-builder'
   proj.component 'rubygem-CFPropertyList'
-  # needs to come before hiera-eyaml. Otherwise vanagon tries to install a deb/rpm called rubygem-base64
-  proj.component 'rubygem-base64'
   proj.component 'rubygem-rexml'
   proj.component 'rubygem-colored2'
   proj.component 'rubygem-concurrent-ruby'
-  proj.component 'rubygem-connection_pool'
   proj.component 'rubygem-cri'
   proj.component 'rubygem-erubi'
   proj.component 'rubygem-openfact'
   proj.component 'rubygem-ffi'
   proj.component 'rubygem-gssapi'
   proj.component 'rubygem-gyoku'
-  proj.component 'rubygem-hiera'
   proj.component 'rubygem-httpclient'
   proj.component 'rubygem-jmespath'
   proj.component 'rubygem-jwt'
@@ -198,13 +186,10 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-molinillo'
   # TODO: multi_json will probably be obsolete for openbolt 6 - see https://github.com/OpenVoxProject/openvox/pull/293
   proj.component 'rubygem-multi_json'
-  proj.component 'rubygem-multipart-post'
-  proj.component 'rubygem-net-http-persistent'
   proj.component 'rubygem-net-scp'
   proj.component 'rubygem-net-ssh'
   proj.component 'rubygem-net-ssh-krb'
   proj.component 'rubygem-nori'
-  proj.component 'rubygem-orchestrator_client'
   proj.component 'rubygem-paint'
   proj.component 'rubygem-public_suffix'
   proj.component 'rubygem-openvox'
@@ -221,7 +206,6 @@ project 'openbolt-runtime' do |proj|
   proj.component 'rubygem-thor'
   proj.component 'rubygem-unicode-display_width'
   proj.component 'rubygem-unicode-emoji'
-  proj.component 'rubygem-webrick'
   proj.component 'rubygem-yard'
   proj.component 'rubygem-openvox-strings'
 
@@ -249,7 +233,7 @@ project 'openbolt-runtime' do |proj|
     proj.component 'libxml2'
     # Ruby Augeas and shadow
     proj.component 'ruby-augeas'
-    proj.component 'ruby-shadow'
+    proj.component 'ruby-shadow-patched'
   end
 
   # Linux specific components
