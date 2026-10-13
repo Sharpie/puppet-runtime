@@ -1,3 +1,4 @@
+require 'net/http'
 require 'open3'
 
 RED = "\033[31m".freeze
@@ -23,6 +24,18 @@ def run_command(cmd, silent: true, print_command: false, report_status: false)
     puts "#{GREEN}Command finished with status #{exitcode}#{RESET}" if report_status
   end
   output.chomp
+end
+
+def http(url)
+  uri = URI(url)
+  Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |h|
+    req = Net::HTTP::Get.new(uri)
+    req['User-Agent'] = 'openvox_puppet_runtime/1.0'
+    res = h.request(req)
+    raise "HTTP #{res.code} #{uri}" unless res.is_a?(Net::HTTPSuccess)
+
+    res.body
+  end
 end
 
 begin
