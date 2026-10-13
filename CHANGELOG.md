@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.13.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.13.1) (2026-10-13)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.12.2...2026.10.13.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| rubygem-faraday-follow_redirects | 0.3.0 | 0.5.0 |
+| rubygem-fast_gettext | 2.4.0 | 4.1.1 |
+| rubygem-multi_json | 1.19.1 | 1.21.2 |
+| rubygem-openfact | 5.7.2 | 6.2.1 |
+| rubygem-openvox | 8.30.0 | 9.0.0 |
+
+
+**Merged pull requests:**
+
+- openbolt-runtime for OpenBolt 9 [\#288](https://github.com/OpenVoxProject/puppet-runtime/pull/288) ([nmburgan](https://github.com/nmburgan))
+- Update readline to use kernel.org mirror [\#283](https://github.com/OpenVoxProject/puppet-runtime/pull/283) ([nmburgan](https://github.com/nmburgan))
+
 ## [2026.10.12.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.12.2) (2026-10-12)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.12.1...2026.10.12.2)
