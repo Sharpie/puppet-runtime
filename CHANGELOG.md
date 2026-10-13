@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.13.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.13.2) (2026-10-13)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.13.1...2026.10.13.2)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| rubygem-aws-partitions | 1.1290.0 | 1.1294.0 |
+| rubygem-aws-sdk-ec2 | 1.653.0 | 1.655.0 |
+| rubygem-net-ssh | 7.3.3 | 7.3.6 |
+| rubygem-openvox | 9.0.0 | 9.1.0 |
+| rubygem-openvox-strings | 7.1.0 | 7.2.0 |
+| rubygem-winrm | 2.4.1 | 2.4.2 |
+
+
+**Merged pull requests:**
+
+- Revert faraday-net\_http to 3.4.4 [\#293](https://github.com/OpenVoxProject/puppet-runtime/pull/293) ([nmburgan](https://github.com/nmburgan))
+- Build the runtimes a change affects in the PR checks [\#292](https://github.com/OpenVoxProject/puppet-runtime/pull/292) ([nmburgan](https://github.com/nmburgan))
+- Update Ruby components [\#291](https://github.com/OpenVoxProject/puppet-runtime/pull/291) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [2026.10.13.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.13.1) (2026-10-13)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.12.2...2026.10.13.1)
