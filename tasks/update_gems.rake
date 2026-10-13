@@ -3,7 +3,6 @@
 require 'rake'
 require 'json'
 require 'uri'
-require 'net/http'
 require 'rubygems/version'
 require 'rubygems/requirement'
 require 'open3'
@@ -137,18 +136,6 @@ end
 def progress_clear(io: $stderr)
   io.print("\r#{' ' * 100}\r")
   io.flush
-end
-
-def http(url)
-  uri = URI(url)
-  Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |h|
-    req = Net::HTTP::Get.new(uri)
-    req['User-Agent'] = 'openvox_update_gems/1.0'
-    res = h.request(req)
-    raise "HTTP #{res.code} #{uri}" unless res.is_a?(Net::HTTPSuccess)
-
-    res.body
-  end
 end
 
 def get_versions(name)
