@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.15.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.15.1) (2026-10-15)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.13.2...2026.10.15.1)
+
+**Merged pull requests:**
+
+- Keep patch files free of line ending conversion [\#296](https://github.com/OpenVoxProject/puppet-runtime/pull/296) ([nmburgan](https://github.com/nmburgan))
+- Hold gem components to what their dependents accept  [\#295](https://github.com/OpenVoxProject/puppet-runtime/pull/295) ([nmburgan](https://github.com/nmburgan))
+
 ## [2026.10.13.2](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.13.2) (2026-10-13)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.13.1...2026.10.13.2)
