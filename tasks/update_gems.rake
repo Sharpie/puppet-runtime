@@ -119,6 +119,7 @@ DEFAULT_AND_BUNDLED_GEMS = [
 ].freeze
 @versions_cache = {}
 
+@components        = {} # gem_name => component state, see new_component
 @component_deps    = {} # gem_name => [dep gem names]
 @component_changes = [] # changed / created components
 @project_component_additions = Hash.new { |h, k| h[k] = [] } # project => [component names added, e.g. "rubygem-foo"]
@@ -163,7 +164,7 @@ def find_sha(name, version, platform)
   metadata['sha']
 end
 
-def get_metadata(name:, version: nil, platforms: ['ruby'])
+def get_metadata(name:, version: nil, platforms: ['ruby'], requirement: nil)
   versions = get_versions(name)
   raise "No versions found for gem #{name}" if versions.empty?
 
@@ -173,9 +174,13 @@ def get_metadata(name:, version: nil, platforms: ['ruby'])
       !v['prerelease'] &&
         !v['yanked'] &&
         (v['platform'].nil? || v['platform'] == 'ruby') &&
-        ruby_req_ok?(v['ruby_version'])
+        ruby_req_ok?(v['ruby_version']) &&
+        (requirement.nil? || requirement.satisfied_by?(Gem::Version.new(v['number'])))
     end
-    raise "No compatible versions found for gem #{name}" if candidates.empty?
+    if candidates.empty?
+      wanted = requirement ? " matching #{requirement}" : ''
+      raise "No compatible versions found for gem #{name}#{wanted}"
+    end
 
     candidates.max_by { |v| Gem::Version.new(v['number']) }['number']
   end
@@ -187,9 +192,22 @@ def get_metadata(name:, version: nil, platforms: ['ruby'])
   { 'version' => version, 'shas' => shas, 'dependencies' => deps }
 end
 
-# Process a single component file, updating its maintenance section as needed.
-# Returns an array of gem names for any missing dependency components that need to be created.
-def process_component_file(path)
+# State for a component that has no file yet. read_component adds the file
+# contents and what its maintenance section currently says.
+def new_component(gem_name)
+  {
+    gem_name: gem_name,
+    component_name: "rubygem-#{gem_name}",
+    path: component_path(gem_name),
+    pinned: false,
+    current_version: nil,
+    current_deps: [],
+    platforms: ['ruby']
+  }
+end
+
+# Reads a component file and what its maintenance section currently says.
+def read_component(path)
   lines = File.read(path, encoding: 'UTF-8').lines
 
   start = lines.index { |l| l =~ MAINT_START } or raise "Automated maintenance section not found in #{path}"
@@ -221,7 +239,73 @@ def process_component_file(path)
   component_name = File.basename(path, '.rb')
   gem_name       = component_name.sub(/^rubygem-/, '')
 
-  metadata       = get_metadata(name: gem_name, version: pinned ? current_version : nil, platforms: platforms)
+  new_component(gem_name).merge(lines: lines, start: start, finish: finish, body: body, pinned: pinned,
+                                current_version: current_version, current_deps: current_deps, platforms: platforms)
+end
+
+# A pinned component keeps its version. Any other gets the newest release
+# that fits the target Ruby and, when given, the requirement.
+def resolve_component(component, requirement: nil)
+  component[:metadata] = get_metadata(name: component[:gem_name],
+                                      version: component[:pinned] ? component[:current_version] : nil,
+                                      platforms: component[:platforms],
+                                      requirement: requirement)
+end
+
+def describe_dependents(dependents)
+  dependents.map { |gem_name, requirements| "#{gem_name} requires #{requirements}" }.join(' and ')
+end
+
+# Creates the components that dependencies are missing and lowers any
+# dependency that a dependent cannot use to the newest version all of its
+# dependents accept. A lowered version may change what that gem depends
+# on, so this repeats until nothing moves.
+def resolve_dependencies
+  loop do
+    changed = false
+    dependency_gems = @components.values.flat_map { |c| c[:metadata]['dependencies'].map { |d| d['name'] } }.uniq.sort
+
+    dependency_gems.each do |gem_name|
+      # Each dependent as [gem name, requirement string], then all of them as one requirement
+      dependents = @components.values.flat_map do |dependent|
+        dependent[:metadata]['dependencies'].select { |d| d['name'] == gem_name }
+                                            .map { |d| [dependent[:gem_name], d['requirements']] }
+      end
+      requirement = Gem::Requirement.new(dependents.flat_map { |_, requirements| requirements.split(',').map(&:strip) })
+      component   = @components[gem_name]
+
+      if component.nil?
+        progress_print("Creating component rubygem-#{gem_name}")
+        component = new_component(gem_name)
+        @components[gem_name] = component
+        resolve_component(component, requirement: requirement)
+      elsif requirement.satisfied_by?(Gem::Version.new(component[:metadata]['version']))
+        next
+      elsif component[:pinned]
+        raise "#{component[:component_name]} is pinned at #{component[:metadata]['version']} but #{describe_dependents(dependents)}"
+      else
+        newest = component[:held_from] || component[:metadata]['version']
+        resolve_component(component, requirement: requirement)
+        component[:held_from] = newest
+        component[:held_by]   = dependents.reject do |_, requirements|
+          Gem::Requirement.new(requirements.split(',').map(&:strip)).satisfied_by?(Gem::Version.new(newest))
+        end
+      end
+
+      changed = true
+    end
+
+    break unless changed
+  end
+end
+
+# Rewrites the maintenance section of an existing component file from the resolved metadata.
+def process_component_file(component)
+  path, lines, start, finish, body = component.values_at(:path, :lines, :start, :finish, :body)
+  current_version, current_deps    = component.values_at(:current_version, :current_deps)
+  gem_name, component_name         = component.values_at(:gem_name, :component_name)
+
+  metadata       = component[:metadata]
   target_version = metadata['version']
   shas           = metadata['shas']
   gem_deps       = (metadata['dependencies'] || []).map { |d| d['name'] }.uniq.sort
@@ -266,26 +350,22 @@ def process_component_file(path)
   deps_added_gems       = gem_deps - old_deps
   deps_added_components = deps_added_gems.map { |gem| "rubygem-#{gem}" }
 
-  missing_gems = gem_deps.reject { |gem| File.exist?(component_path(gem)) }
-
   # Only mark a component as changed if we materially changed something.
   # Ignore sorting of existing dependencies or updating md5 to sha256.
-  if current_version != target_version || !deps_added_components.empty?
-    @component_changes << {
-      name: component_name,
-      old_version: current_version,
-      new_version: target_version,
-      deps_added: deps_added_components
-    }
-  end
+  return if current_version == target_version && deps_added_components.empty?
 
-  missing_gems
+  @component_changes << {
+    name: component_name,
+    old_version: current_version,
+    new_version: target_version,
+    deps_added: deps_added_components
+  }
 end
 
-def create_missing_component(gem_name)
-  path = component_path(gem_name)
+def create_missing_component(component)
+  gem_name, path = component.values_at(:gem_name, :path)
 
-  metadata = get_metadata(name: gem_name, platforms: ['ruby'])
+  metadata = component[:metadata]
   version  = metadata['version']
   sha      = metadata['shas']['ruby']
   raise "No ruby SHA found for new component rubygem-#{gem_name}" unless sha
@@ -319,32 +399,26 @@ def create_missing_component(gem_name)
     new_version: version,
     deps_added: gem_deps.map { |gem| "rubygem-#{gem}" }
   }
-
-  gem_deps
 end
 
 def update_all_components_and_create_missing
-  missing_queue   = []
   component_paths = Dir[COMPONENT_GLOB].sort
   total           = component_paths.length
 
   component_paths.each_with_index do |path, i|
     progress_print("Processing (#{i + 1}/#{total}): #{File.basename(path, '.rb')}")
-    missing_queue.concat(process_component_file(path))
+    component = read_component(path)
+    resolve_component(component)
+    @components[component[:gem_name]] = component
   end
   progress_clear
 
-  until missing_queue.empty?
-    gem_name = missing_queue.shift
-    next if File.exist?(component_path(gem_name))
-
-    progress_print("Creating component rubygem-#{gem_name}")
-    create_missing_component(gem_name).each do |dep_gem|
-      dep_path = component_path(dep_gem)
-      missing_queue << dep_gem if !File.exist?(dep_path) && !missing_queue.include?(dep_gem)
-    end
-  end
+  resolve_dependencies
   progress_clear
+
+  @components.each_value do |component|
+    component[:lines] ? process_component_file(component) : create_missing_component(component)
+  end
 end
 
 def ensure_projects_have_component_deps
@@ -418,6 +492,15 @@ def build_summary
     end
   end
 
+  held = @components.values.select { |c| c[:held_from] }.sort_by { |c| c[:component_name] }
+  unless held.empty?
+    lines << '' unless lines.empty?
+    lines << 'Held back by dependents:'
+    held.each do |c|
+      lines << "- #{c[:component_name]}: #{c[:held_from]} available, kept at #{c[:metadata]['version']} because #{describe_dependents(c[:held_by])}"
+    end
+  end
+
   lines.join("\n")
 end
 
@@ -485,13 +568,12 @@ def check_and_summarize(commit: true)
   progress_clear
 
   summary = build_summary
+  puts summary unless summary.empty?
 
-  if summary.empty?
+  if @component_changes.empty? && @project_component_additions.values.all?(&:empty?)
     puts 'No updates to any rubygem components needed'
     exit 0
   end
-
-  puts summary
 
   return unless commit
 

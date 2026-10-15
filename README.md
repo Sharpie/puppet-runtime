@@ -94,6 +94,8 @@ pkg.build_requires 'rubygem-logger'
 ### End automated maintenance section ###
 ```
 
+A component never moves past what the components depending on it accept. When the newest release of a gem falls outside a dependent's requirement, the task holds the gem at the newest release every dependent accepts and lists the hold in its summary, which is also the commit message. A `# PINNED` version that a dependent cannot use fails the task, since the build would fail with it.
+
 Adding `# GEM TYPE: <type>` will allow you to specify a checksum for a precompiled version of a gem. This can be used with other logic within the magic block to specify a checksum based on platform. For example:
 ```
 ### Maintained by update_gems automation ###
