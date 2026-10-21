@@ -5,8 +5,8 @@
 #####
 component 'rubygem-aws-sdk-core' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  pkg.version '3.258.0'
-  pkg.sha256sum '64722d9e5f6e3fedcd744ed4b350ea91f91a7ec2dd526057ad8fd4c579dac840'
+  pkg.version '3.259.0'
+  pkg.sha256sum '1c2bcb73d4c1146a2f52a2a05258ae11e349fb8ea6e42159c699d6dae9fb9441'
   pkg.build_requires 'rubygem-aws-eventstream'
   pkg.build_requires 'rubygem-aws-partitions'
   pkg.build_requires 'rubygem-aws-sigv4'
