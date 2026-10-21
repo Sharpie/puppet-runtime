@@ -1,6 +1,41 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.21.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.21.1) (2026-10-21)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.15.1...2026.10.21.1)
+
+
+**Component Changes:**
+| Component | Old Version | New Version |
+|-----------|-------------|-------------|
+| curl | 8.22.0 | 8.23.0 |
+| puppet-ca-bundle-8.x | refs/tags/1.1.0 | refs/tags/1.1.1 |
+| puppet-ca-bundle-main | refs/tags/1.2.0 | refs/tags/2.0.0 |
+| ruby-selinux | 3.10 | 3.11 |
+| rubygem-aws-partitions | 1.1294.0 | 1.1296.0 |
+| rubygem-aws-sdk-core | 3.257.0 | 3.259.0 |
+| rubygem-aws-sdk-ec2 | 1.655.0 | 1.658.0 |
+| rubygem-faraday | 2.14.4 | 2.15.0 |
+| rubygem-faraday-net_http | 3.4.4 | 3.5.0 |
+
+
+**Implemented enhancements:**
+
+- Add support for Fedora 45 [\#301](https://github.com/OpenVoxProject/puppet-runtime/pull/301) ([Sharpie](https://github.com/Sharpie))
+
+**Security fixes:**
+
+- curl: Update 8.22.0-\>8.23.0 [\#305](https://github.com/OpenVoxProject/puppet-runtime/pull/305) ([Sharpie](https://github.com/Sharpie))
+- Update CA bundles to remove compromised eMudhra CAs [\#304](https://github.com/OpenVoxProject/puppet-runtime/pull/304) ([Sharpie](https://github.com/Sharpie))
+
+**Merged pull requests:**
+
+- Update Ruby components [\#303](https://github.com/OpenVoxProject/puppet-runtime/pull/303) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Update Ruby components [\#302](https://github.com/OpenVoxProject/puppet-runtime/pull/302) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+- Remove openssl gem from Gemfile [\#300](https://github.com/OpenVoxProject/puppet-runtime/pull/300) ([nmburgan](https://github.com/nmburgan))
+- Update Ruby components [\#297](https://github.com/OpenVoxProject/puppet-runtime/pull/297) ([OpenVoxProjectBot](https://github.com/OpenVoxProjectBot))
+
 ## [2026.10.15.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.15.1) (2026-10-15)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.13.2...2026.10.15.1)
