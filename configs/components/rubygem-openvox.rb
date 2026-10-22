@@ -5,8 +5,8 @@
 #####
 component 'rubygem-openvox' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  pkg.version '9.1.0'
-  pkg.sha256sum 'fd7a947b743cdb84097ebfa8961e4efed4570b9c19e4b3d882b903371b795959'
+  pkg.version '9.1.1'
+  pkg.sha256sum '5dea96203eb419805110edddb0aeb1629f9dd76e2084fa91149035bd49651a88'
   pkg.build_requires 'rubygem-concurrent-ruby'
   pkg.build_requires 'rubygem-deep_merge'
   pkg.build_requires 'rubygem-fast_gettext'
