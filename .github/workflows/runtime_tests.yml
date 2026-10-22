@@ -14,7 +14,7 @@ env:
 jobs:
   vanagon_inspect:
     name: Vanagon inspect
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       build_matrix: ${{ steps.inspect.outputs.build_matrix }}
     steps:
@@ -55,7 +55,7 @@ jobs:
     needs:
       - vanagon_inspect
       - build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Test suite
     steps:
       - name: Decide whether the needed jobs succeeded or failed
