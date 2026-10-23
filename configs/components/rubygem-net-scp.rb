@@ -5,8 +5,8 @@
 #####
 component 'rubygem-net-scp' do |pkg, _settings, _platform|
   ### Maintained by update_gems automation ###
-  pkg.version '4.1.0'
-  pkg.sha256sum 'a99b0b92a1e5d360b0de4ffbf2dc0c91531502d3d4f56c28b0139a7c093d1a5d'
+  pkg.version '4.1.1'
+  pkg.sha256sum '6017d1af1ca175cb193e8a33ca4bb7c53ddd40de7a050643b3b15ec386b2d392'
   pkg.build_requires 'rubygem-net-ssh'
   ### End automated maintenance section ###
 
