@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.25.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.25.1) (2026-10-25)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.23.1...2026.10.25.1)
+
+**Implemented enhancements:**
+
+- Add Amazon 2027 support [\#317](https://github.com/OpenVoxProject/puppet-runtime/pull/317) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [2026.10.23.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.23.1) (2026-10-23)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.22.1...2026.10.23.1)
