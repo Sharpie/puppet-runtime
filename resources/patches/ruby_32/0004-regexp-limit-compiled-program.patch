@@ -1,0 +1,65 @@
+From: Hiroshi SHIBATA <hsbt@ruby-lang.org>
+Date: 2026-09-25T12:10:25+09:00
+Subject: [PATCH 4/6] Reject compiled regexp programs too large for offsets
+
+Backport of Ruby 3.3 commit b03e500193371ae87dc4536d855008b42a9cd1a7
+(ruby/ruby#19020, CVE-2026-93577 and CVE-2026-97229).
+Apply after 0002, which introduces the preceding error codes.
+
+---
+diff --git a/include/ruby/onigmo.h b/include/ruby/onigmo.h
+index ebeca9eb5c..5adcf71b78 100644
+--- a/include/ruby/onigmo.h
++++ b/include/ruby/onigmo.h
+@@ -688,6 +688,7 @@ ONIG_EXTERN const OnigSyntaxType*   OnigDefaultSyntax;
+ #define ONIGERR_INVALID_CHAR_PROPERTY_NAME                   -223
+ #define ONIGERR_TOO_MANY_RANGE_REPEAT                        -224
+ #define ONIGERR_TOO_MANY_NULL_CHECK                          -225
++#define ONIGERR_TOO_BIG_COMPILED_PROGRAM                     -226
+ #define ONIGERR_INVALID_CODE_POINT_VALUE                     -400
+ #define ONIGERR_INVALID_WIDE_CHAR_VALUE                      -400
+ #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
+diff --git a/regcomp.c b/regcomp.c
+index bc1c1d0c88..9453101418 100644
+--- a/regcomp.c
++++ b/regcomp.c
+@@ -224,6 +224,10 @@ unset_addr_list_add(UnsetAddrList* uslist, int offset, struct _Node* node)
+ static int
+ add_opcode(regex_t* reg, int opcode)
+ {
++  /* Every instruction passes here, so this is where a program that would
++     outgrow its offset type is stopped, while it is still being emitted. */
++  if (reg->used > MAX_COMPILED_PROGRAM_SIZE)
++    return ONIGERR_TOO_BIG_COMPILED_PROGRAM;
+   BBUF_ADD1(reg, opcode);
+   return 0;
+ }
+diff --git a/regerror.c b/regerror.c
+index 545d533824..cee59ff56b 100644
+--- a/regerror.c
++++ b/regerror.c
+@@ -169,6 +169,8 @@ onig_error_code_to_format(OnigPosition code)
+     p = "too many range repeat"; break;
+   case ONIGERR_TOO_MANY_NULL_CHECK:
+     p = "too many null check"; break;
++  case ONIGERR_TOO_BIG_COMPILED_PROGRAM:
++    p = "too big compiled program"; break;
+   case ONIGERR_TOO_MANY_CAPTURE_GROUPS:
+     p = "too many capture groups are specified"; break;
+   case ONIGERR_INVALID_CODE_POINT_VALUE:
+diff --git a/regint.h b/regint.h
+index cee766ad6e..0655b1dc12 100644
+--- a/regint.h
++++ b/regint.h
+@@ -396,6 +396,11 @@ typedef unsigned int  BitStatusType;
+ #define INT_MAX_LIMIT           ((1UL << (SIZEOF_INT * 8 - 1)) - 1)
+ #define LONG_MAX_LIMIT           ((1UL << (SIZEOF_LONG * 8 - 1)) - 1)
+ 
++/* Program offsets are RelAddrType, and the compile_length_*() functions sum
++   into int, so a larger program would wrap both.  The quarter leaves room
++   for the sums the offset arithmetic makes out of those lengths. */
++#define MAX_COMPILED_PROGRAM_SIZE  ((unsigned int )(INT_MAX_LIMIT / 4))
++
+ #define DIGITVAL(code)    ((code) - '0')
+ #define ODIGITVAL(code)   DIGITVAL(code)
+ #define XDIGITVAL(enc,code) \

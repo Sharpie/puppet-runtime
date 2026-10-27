@@ -24,12 +24,16 @@ component 'ruby-3.2' do |pkg, settings, platform|
 
   base = 'resources/patches/ruby_32'
 
-  # Prevent double frees when regexp parsing fails after an alternation.
+  # Backport the Ruby 3.3.13 Regexp compilation fixes for GitLab's
+  # CVE-2026-89078, CVE-2026-93577, CVE-2026-97229, and CVE-2026-110264.
+  # Keep this order: the size-limit error depends on the ID error codes,
+  # and the final two patches follow up earlier fixes.
   pkg.apply_patch "#{base}/0001-regexp-avoid-alternation-double-free.patch"
-  # Reject repeat and null-check IDs that overflow their storage type.
   pkg.apply_patch "#{base}/0002-regexp-reject-overflowed-repeat-ids.patch"
-  # Free an unlinked branch on a later alternation parse error.
+  pkg.apply_patch "#{base}/0003-regexp-avoid-quantifier-size-overflow.patch"
+  pkg.apply_patch "#{base}/0004-regexp-limit-compiled-program.patch"
   pkg.apply_patch "#{base}/0005-regexp-free-failed-alternation-branch.patch"
+  pkg.apply_patch "#{base}/0006-regexp-preserve-program-size-error.patch"
 
   if platform.is_windows?
     pkg.apply_patch "#{base}/windows_mingw32_mkmf.patch"

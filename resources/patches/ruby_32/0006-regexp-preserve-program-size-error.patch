@@ -1,0 +1,21 @@
+From: Hiroshi SHIBATA <hsbt@ruby-lang.org>
+Date: 2026-10-23T10:22:03+09:00
+Subject: [PATCH 6/6] Preserve compiled regexp size errors with subexp calls
+
+Backport of Ruby 3.3 commit f6496bca68ca445bcc1ced04818bfa4220b2bc7f.
+Follow-up to the size limit from 0004; do not overwrite a failed
+OP_END result while fixing subexpression call addresses.
+
+---
+diff --git a/regcomp.c b/regcomp.c
+index 9453101418..e36b9b7d3e 100644
+--- a/regcomp.c
++++ b/regcomp.c
+@@ -5886,6 +5886,7 @@ onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
+   r = compile_tree(root, reg);
+   if (r == 0) {
+     r = add_opcode(reg, OP_END);
++    if (r != 0) goto err_unset;
+ #ifdef USE_SUBEXP_CALL
+     if (scan_env.num_call > 0) {
+       r = unset_addr_list_fix(&uslist, reg);
