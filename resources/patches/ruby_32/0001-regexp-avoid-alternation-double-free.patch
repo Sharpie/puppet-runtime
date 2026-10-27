@@ -1,0 +1,73 @@
+From: Hiroya Fujinami <make.just.on@gmail.com>
+Date: 2025-05-16T10:14:26+09:00
+Subject: [PATCH 1/6] Prevent double free while parsing regexp alternations
+
+Backport of Ruby 3.3 commit 63d0ba80a7d7fd348423fa450a3d766091d1f3a8
+(ruby/ruby#13332, CVE-2026-89078).
+
+---
+diff --git a/regparse.c b/regparse.c
+index 33df0e06c7..c2839899bb 100644
+--- a/regparse.c
++++ b/regparse.c
+@@ -6536,7 +6536,7 @@ parse_subexp(Node** top, OnigToken* tok, int term,
+ 	     UChar** src, UChar* end, ScanEnv* env)
+ {
+   int r;
+-  Node *node, **headp;
++  Node *node, *topnode, **headp;
+ 
+   *top = NULL;
+   env->parse_depth++;
+@@ -6552,14 +6552,17 @@ parse_subexp(Node** top, OnigToken* tok, int term,
+     *top = node;
+   }
+   else if (r == TK_ALT) {
+-    *top  = onig_node_new_alt(node, NULL);
+-    headp = &(NCDR(*top));
++    topnode = onig_node_new_alt(node, NULL);
++    headp = &(NCDR(topnode));
+     while (r == TK_ALT) {
+       r = fetch_token(tok, src, end, env);
+-      if (r < 0) return r;
++      if (r < 0) {
++	onig_node_free(topnode);
++	return r;
++      }
+       r = parse_branch(&node, tok, term, src, end, env);
+       if (r < 0) {
+-	onig_node_free(node);
++	onig_node_free(topnode);
+ 	return r;
+       }
+ 
+@@ -6567,8 +6570,11 @@ parse_subexp(Node** top, OnigToken* tok, int term,
+       headp = &(NCDR(*headp));
+     }
+ 
+-    if (tok->type != (enum TokenSyms )term)
++    if (tok->type != (enum TokenSyms )term) {
++      onig_node_free(topnode);
+       goto err;
++    }
++    *top = topnode;
+   }
+   else {
+     onig_node_free(node);
+diff --git a/test/ruby/test_regexp.rb b/test/ruby/test_regexp.rb
+index b385760b42..9c4ef98ffb 100644
+--- a/test/ruby/test_regexp.rb
++++ b/test/ruby/test_regexp.rb
+@@ -1643,6 +1643,12 @@ def test_invalid_group
+     end;
+   end
+ 
++  def test_too_big_number_for_repeat_range
++    assert_raise_with_message(SyntaxError, /too big number for repeat range/) do
++      eval(%[/|{1000000}/])
++    end
++  end
++
+   # This assertion is for porting x2() tests in testpy.py of Onigmo.
+   def assert_match_at(re, str, positions, msg = nil)
+     re = Regexp.new(re) unless re.is_a?(Regexp)
