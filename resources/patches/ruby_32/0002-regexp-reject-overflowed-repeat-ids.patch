@@ -1,0 +1,78 @@
+From: Hiroya Fujinami <make.just.on@gmail.com>
+Date: 2026-04-29T11:09:24+09:00
+Subject: [PATCH 2/6] Reject overflowed repeat and null-check IDs in regexps
+
+Backport of Ruby 3.3 commit 63eda2681e24cdf9fbe45fdd8a3d8866f4f59878
+(ruby/ruby#16801, CVE-2026-110264). Place tests at the end of the
+Ruby 3.2 test_regexp.rb suite.
+
+---
+diff --git a/include/ruby/onigmo.h b/include/ruby/onigmo.h
+index 8d7c601703..ebeca9eb5c 100644
+--- a/include/ruby/onigmo.h
++++ b/include/ruby/onigmo.h
+@@ -686,6 +686,8 @@ ONIG_EXTERN const OnigSyntaxType*   OnigDefaultSyntax;
+ #define ONIGERR_NEVER_ENDING_RECURSION                       -221
+ #define ONIGERR_GROUP_NUMBER_OVER_FOR_CAPTURE_HISTORY        -222
+ #define ONIGERR_INVALID_CHAR_PROPERTY_NAME                   -223
++#define ONIGERR_TOO_MANY_RANGE_REPEAT                        -224
++#define ONIGERR_TOO_MANY_NULL_CHECK                          -225
+ #define ONIGERR_INVALID_CODE_POINT_VALUE                     -400
+ #define ONIGERR_INVALID_WIDE_CHAR_VALUE                      -400
+ #define ONIGERR_TOO_BIG_WIDE_CHAR_VALUE                      -401
+diff --git a/regcomp.c b/regcomp.c
+index be85d85f93..231ccae8ce 100644
+--- a/regcomp.c
++++ b/regcomp.c
+@@ -395,6 +395,7 @@ compile_tree_empty_check(Node* node, regex_t* reg, int empty_info)
+     r = add_mem_num(reg, reg->num_null_check); /* NULL CHECK ID */
+     if (r) return r;
+     reg->num_null_check++;
++    if ((MemNumType)reg->num_null_check <= 0) return ONIGERR_TOO_MANY_NULL_CHECK;
+   }
+ 
+   r = compile_tree(node, reg);
+@@ -704,6 +705,7 @@ compile_range_repeat_node(QtfrNode* qn, int target_len, int empty_info,
+   if (r) return r;
+   r = add_mem_num(reg, num_repeat); /* OP_REPEAT ID */
+   reg->num_repeat++;
++  if ((MemNumType)reg->num_repeat <= 0) return ONIGERR_TOO_MANY_RANGE_REPEAT;
+   if (r) return r;
+   r = add_rel_addr(reg, target_len + SIZE_OP_REPEAT_INC);
+   if (r) return r;
+diff --git a/regerror.c b/regerror.c
+index b18fc2e88b..545d533824 100644
+--- a/regerror.c
++++ b/regerror.c
+@@ -165,6 +165,10 @@ onig_error_code_to_format(OnigPosition code)
+     p = "group number is too big for capture history"; break;
+   case ONIGERR_INVALID_CHAR_PROPERTY_NAME:
+     p = "invalid character property name {%n}"; break;
++  case ONIGERR_TOO_MANY_RANGE_REPEAT:
++    p = "too many range repeat"; break;
++  case ONIGERR_TOO_MANY_NULL_CHECK:
++    p = "too many null check"; break;
+   case ONIGERR_TOO_MANY_CAPTURE_GROUPS:
+     p = "too many capture groups are specified"; break;
+   case ONIGERR_INVALID_CODE_POINT_VALUE:
+diff --git a/test/ruby/test_regexp.rb b/test/ruby/test_regexp.rb
+index 9c4ef98ffb..ebce6d90b8 100644
+--- a/test/ruby/test_regexp.rb
++++ b/test/ruby/test_regexp.rb
+@@ -1844,4 +1844,16 @@ def test_linear_time_p
+     assert_raise(TypeError) {Regexp.linear_time?(nil)}
+     assert_raise(TypeError) {Regexp.linear_time?(Regexp.allocate)}
+   end
++
++  def test_too_many_range_repeat
++    source = '(?:foobar){0,100}' * 100000
++    assert_raise(RegexpError) { Regexp.new(source) }
++    assert_raise(SyntaxError) { eval("/#{source}/") }
++  end
++
++  def test_too_many_null_check
++    source = '(?:(?:foo)?|(?:bar)?)*' * 100000
++    assert_raise(RegexpError) { Regexp.new(source) }
++    assert_raise(SyntaxError) { eval("/#{source}/") }
++  end
+ end

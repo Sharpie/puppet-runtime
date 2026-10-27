@@ -25,8 +25,10 @@ component 'ruby-3.2' do |pkg, settings, platform|
   base = 'resources/patches/ruby_32'
 
   # Prevent double frees when regexp parsing fails after an alternation.
-  # The second patch frees an unlinked branch on a later parse error.
   pkg.apply_patch "#{base}/0001-regexp-avoid-alternation-double-free.patch"
+  # Reject repeat and null-check IDs that overflow their storage type.
+  pkg.apply_patch "#{base}/0002-regexp-reject-overflowed-repeat-ids.patch"
+  # Free an unlinked branch on a later alternation parse error.
   pkg.apply_patch "#{base}/0005-regexp-free-failed-alternation-branch.patch"
 
   if platform.is_windows?
