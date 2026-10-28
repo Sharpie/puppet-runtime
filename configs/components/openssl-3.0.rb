@@ -95,6 +95,28 @@ component 'openssl' do |pkg, settings, platform|
     configure_flags << 'no-legacy' << 'no-md4'
   end
 
+  # Patches for OpenSSL CVE fixes released in September, 2026
+  # Sourced from the debian/bookworm branch of:
+  #   https://salsa.debian.org/debian/openssl
+  sep_2026_patchset = [
+    # Fixes: CVE-2026-35189
+    'Defer-computation-of-relative-CRLDP-names.patch',
+    # Fixes: CVE-2026-75805
+    'Guard-comparision-when-values-are-NULL.patch',
+    'Add-test-for-CVE-2026-75805.patch',
+    # Fixes: CVE-2026-75806
+    'TLS-Reject-undersized-TLS-1.2-AEAD-records-before-AEAD-pr.patch',
+    # Fixes: CVE-2026-54872
+    'ec-make-ossl_ec_scalar_mul_ladder-scalar-padding-constant.patch',
+    # Fixes: CVE-2026-77696
+    'sm2-make-sm2_sig_gen-constant-time.patch',
+    # Fixes: CVE-2026-84782
+    'dtls-reset-init_off-before-retransmitting-a-message.patch'
+  ]
+  sep_2026_patchset.each do |patch|
+    pkg.apply_patch("resources/patches/openssl/openssl_30/#{patch}")
+  end
+
   # Individual projects may provide their own openssl configure flags:
   project_flags = settings[:openssl_extra_configure_flags] || []
   configure_flags << project_flags
