@@ -1,0 +1,50 @@
+From: Sethu <s.c.arunachalam@lifelenz.com>
+Date: 2026-09-25T14:40:12+09:30
+Subject: [PATCH 5/6] Free unlinked branch on regexp alternation error
+
+Backport of Ruby 3.3 commit 745e06b1b0e6ec2af5ecb4bc0ee0de5e8d641207
+(Ruby bug #22384). Follow-up to the alternation fix in 0001;
+free the incomplete branch as well as its parent on failure.
+
+---
+diff --git a/regparse.c b/regparse.c
+index c2839899bb..59287880d2 100644
+--- a/regparse.c
++++ b/regparse.c
+@@ -6562,6 +6562,8 @@ parse_subexp(Node** top, OnigToken* tok, int term,
+       }
+       r = parse_branch(&node, tok, term, src, end, env);
+       if (r < 0) {
++	/* the failed branch is not linked into topnode yet: free both */
++	onig_node_free(node);
+ 	onig_node_free(topnode);
+ 	return r;
+       }
+diff --git a/test/ruby/test_regexp.rb b/test/ruby/test_regexp.rb
+index ea75b65804..8f8473fe03 100644
+--- a/test/ruby/test_regexp.rb
++++ b/test/ruby/test_regexp.rb
+@@ -972,6 +972,23 @@ def test_regsub_K
+     assert_equal('foobazquux/foobazquux', result, bug8856)
+   end
+ 
++  def test_alternation_compile_error_no_memory_leak
++    # A compile error in the 2nd+ branch of a top-level alternation leaked the
++    # partially parsed branch (parse_subexp freed the alternation list but not
++    # the node parse_branch had built so far). Regexp#to_s reaches this path
++    # for every /(?:a|b)c(d)/-shaped regexp.
++    assert_no_memory_leak([], "#{<<~"begin;"}", "#{<<~"end;"}", "[Bug #22384]", rss: true)
++      code = proc do
++        Regexp.new("a|b(c") rescue nil
++        /(?:a|b)c(d)/.to_s
++      end
++
++      1_000.times(&code)
++    begin;
++      300_000.times(&code)
++    end;
++  end
++
+   def test_ignorecase
+     v = assert_deprecated_warning(/variable \$= is no longer effective/) { $= }
+     assert_equal(false, v)
