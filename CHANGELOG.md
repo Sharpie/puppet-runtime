@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2026.10.28.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.28.1) (2026-10-28)
+
+[Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.25.1...2026.10.28.1)
+
+**Security fixes:**
+
+- Apply Debian 12 patches for Sep. OpenSSL 3.0 CVEs [\#322](https://github.com/OpenVoxProject/puppet-runtime/pull/322) ([Sharpie](https://github.com/Sharpie))
+- Security/ruby 3.2 regexp fixes [\#321](https://github.com/OpenVoxProject/puppet-runtime/pull/321) ([ehelms](https://github.com/ehelms))
+
+**Merged pull requests:**
+
+- Pin fast\_gettext gem to 4.1.1 [\#323](https://github.com/OpenVoxProject/puppet-runtime/pull/323) ([Sharpie](https://github.com/Sharpie))
+
 ## [2026.10.25.1](https://github.com/openvoxproject/puppet-runtime/tree/2026.10.25.1) (2026-10-25)
 
 [Full Changelog](https://github.com/openvoxproject/puppet-runtime/compare/2026.10.23.1...2026.10.25.1)
