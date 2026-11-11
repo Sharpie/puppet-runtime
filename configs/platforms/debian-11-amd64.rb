@@ -1,5 +1,6 @@
 platform 'debian-11-amd64' do |plat|
   plat.inherit_from_default
+  plat.docker_image "debian/eol:bullseye"
 
   packages = [
     'libbz2-dev',

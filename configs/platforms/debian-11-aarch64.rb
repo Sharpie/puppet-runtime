@@ -1,5 +1,7 @@
 platform 'debian-11-aarch64' do |plat|
   plat.inherit_from_default
+  plat.docker_image "debian/eol:bullseye"
+
   packages = [
     'build-essential',
     'cmake',
